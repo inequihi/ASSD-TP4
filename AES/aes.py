@@ -1,13 +1,19 @@
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
-from Crypto.Random import get_random_bytes
-
 from base64 import b64encode
 from base64 import b64decode
 
-
 class AES_Cipher:
     def __init(self):
+        self.plain_data = None
+        self.cipher_data = None
+        self.IV_cipher = None  # Information available to each party of the communication in order to determine the IV
+        self.status = 0  # Status of object AES_cipher:
+
+        # 0 - Data NOT available
+        # 1 - Encryption data available
+        # 2 - Decrypted data available
+
         #   MODE_ECB: Electronic Code Book
         #             Chaining mode. This is the simplest encryption mode.
         #             Each of the plaintext blocks is directly encrypted into a ciphertext block,
@@ -24,15 +30,6 @@ class AES_Cipher:
         #             The IV is a data block to be transmitted to the receiver.
         #             The IV can be made public, but it must be authenticated by the receiver
         #             and it should be picked randomly.
-        self.plain_data = None
-        self.cipher_data = None
-        self.IV_cipher = None  # Information available to each party of the communication in order to determine the IV
-
-        self.status = 0  # Status of object AES_cipher:
-
-        # 0 - Data NOT available
-        # 1 - Encryption data available
-        # 2 - Decrypted data available
 
     def Encrypt(self, KEY, MODE, plain_data):
         # The cipher objects are destroyed once the data is encrypted. The receiver only gets cipher_data and iv
@@ -53,6 +50,7 @@ class AES_Cipher:
         # We create new cipher objects for decryption
         if MODE == AES.MODE_ECB:
             cipher_object = AES.new(KEY, MODE)
+            self.plain_data = unpad(cipher_object.decrypt(cipher_data), AES.block_size)
 
         elif MODE == AES.MODE_CBC:
             cipher_object = AES.new(KEY, MODE, b64decode(cipher_IV))
