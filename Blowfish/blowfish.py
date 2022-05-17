@@ -1,15 +1,15 @@
-from Crypto.Cipher import AES
+from Crypto.Cipher import Blowfish
 from Crypto.Util.Padding import pad, unpad
 from base64 import b64encode
 from base64 import b64decode
 from Crypto.Random import get_random_bytes
 
-class AES_Cipher:
+class BLOWFISH_Cipher:
     def __init__(self):
         self.plain_data = None
         self.cipher_data = None
         self.IV_cipher = None  # Information available to each party of the communication in order to determine the IV
-        self.status = 0  # Status of object AES_Cipher:
+        self.status = 0  # Status of object BLOWFISH_Cipher:
         self.Key = None
         self.Mode = None
 
@@ -35,12 +35,11 @@ class AES_Cipher:
         #             and it should be picked randomly.
 
     def Encrypt(self, MODE, plain_data):
-        # The cipher objects are destroyed once the data is encrypted. The receiver only gets cipher_data and iv
         self.GenerateKey()
         self.Mode = MODE
-        cipher_object = AES.new(self.Key, MODE)
+        cipher_object = Blowfish.new(self.Key, MODE)
 
-        if MODE == AES.MODE_CBC:
+        if MODE == Blowfish.MODE_CBC:
             # An IV must be generated for each execution of the encryption operation, and the same
             # IV is necessary for the corresponding execution of the decryption operation. Therefore, the IV, or
             # information that is sufficient to calculate the IV, must be available to each party to the communication.
@@ -48,18 +47,18 @@ class AES_Cipher:
             # under the same key that is used for the encryption of the plain_data.
             self.IV_cipher = b64encode(cipher_object.iv).decode('utf-8')
 
-        self.cipher_data = cipher_object.encrypt(pad(plain_data, AES.block_size))
+        self.cipher_data = cipher_object.encrypt(pad(plain_data, Blowfish.block_size))
         self.status = 1
 
     def Decrypt(self, KEY, MODE, cipher_data, cipher_IV=None):
         # We create new cipher objects for decryption
-        if MODE == AES.MODE_ECB:
-            cipher_object = AES.new(KEY, MODE)
+        if MODE == Blowfish.MODE_ECB:
+            cipher_object = Blowfish.new(KEY, MODE)
 
-        elif MODE == AES.MODE_CBC:
-            cipher_object = AES.new(KEY, MODE, b64decode(cipher_IV))
+        elif MODE == Blowfish.MODE_CBC:
+            cipher_object = Blowfish.new(KEY, MODE, b64decode(cipher_IV))
 
-        self.plain_data = unpad(cipher_object.decrypt(cipher_data), AES.block_size)
+        self.plain_data = unpad(cipher_object.decrypt(cipher_data), Blowfish.block_size)
         self.status = 2
 
     def GenerateKey(self):
