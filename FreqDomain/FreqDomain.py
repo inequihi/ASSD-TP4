@@ -11,10 +11,11 @@ import numpy as np
 # FUNCIONES MIEMBRO:
     # Funcion 1: Leer .wav y hacer FFT
     # Funcion 2: Aplicar IFFT + Convertir a .wav
-    # Funcion 3: Parsear FFT de array a bytes
-    # Funcion 4: Parsear de Bytes a Array
+    # Funcion 3: Parsear de encriptado (bytes) a ascii y con ese ascii armo un array FFT
+    # Funcion 4: Parsear de array FFT con contenido ASCII a encriptado
     # Funcion 5: que sirva para graficar el audio en dominio tiempo y frecuencia y comparar
-
+    # Funcion 6: Parsea de FFT a sting de byte, agregando el signo entre cada numero
+    # Funcion 7: Parsea de bytes a array FFT
 
 class FreqDomain:
     def __init__(self):
