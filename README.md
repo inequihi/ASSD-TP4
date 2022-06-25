@@ -5,7 +5,7 @@
 
  2. Aplicar transformacion FFT (FFT)
 
- 3. Aplicar funcion FFT-to-byte
+ ###3. Aplicar funcion FFT-to-byte
        La funcion se encarga de convertir una matriz de valores de fourier a un
        string compuesto por dichos valores, separados por su signo
        Ejemplo:
