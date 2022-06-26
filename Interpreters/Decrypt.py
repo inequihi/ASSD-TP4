@@ -11,6 +11,8 @@ import numpy as np
 class Decrypt(Interpreter):
     def __init__(self):
         self.time_samples = None
+        self.data_byte_enc = None  # b'%5yu/223?'
+        self.data_matrix_FFT = None  # [ [1,2] [3,4] ]
 
 
     def Byte_to_FFT(self, byte_fft):
@@ -53,3 +55,11 @@ class Decrypt(Interpreter):
                     FFTa[i][j] = FFTa[i][j] * -1
         return FFTa
 
+
+    def FFT_ASCII_to_encrypt(self):
+        str_answer = ""
+        for i in range(0, len(self.data_matrix_FFT)):
+            for j in range(0, len(self.data_matrix_FFT[i])):
+                str_answer += (chr(int(self.data_matrix_FFT[i][j])))
+
+        self.data_byte_enc = str_answer.encode("latin-1")
