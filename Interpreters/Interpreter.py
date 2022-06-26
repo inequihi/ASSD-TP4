@@ -27,41 +27,53 @@ import numpy as np
 #   Decrypt --> Aplica algoritmo de encriptaicon
 #       Recibe:
 #       Devuelve:
-#   Save_Wav --> Guarda señal de audio en el tiempo a .wav
+#   Create_Wav --> Guarda señal de audio en el tiempo a .wav
 #       Recibe:
 #       Devuelve:
 
 
 class Interpreter:
-    # En el constructor deberia recibir un parametro que sea el tipo de algoritmo que se va a utilizar
-    # para asi crear un objeto del mismo y usar sus funciones de encriptar y desencriptar
     def __init__(self):
         self.time_samples = None
         self.FFT_Array = None
         self.FFT_ASCII = None
         self.IFFT_Array = None
+        self.signal = None
+        self.time = None
 
-    def FFT(self, signal):         # Recibe path de canción y devuelve la fft en formato matriz cuya columna 0
+    def Read_Wav(self,path):
+        self.signal = 0
+        self.time = 0
+        # Signal y time son miembro
+
+        return 0
+
+
+    def FFT(self):         # No recibe nada y devuelve la fft en formato matriz cuya columna 0
                                    # es la parte real y la col 1 es la parte imaginaria
                                    # First we read .wav file and apply Fast Fourier Transform
-        self.FFT_Array = fft(signal)
+        self.FFT_Array = fft(self.signal)
         # Last we encode FFT array of complex numbers to bytes to use the encryption algorithms
         matrix = np.zeros((len(self.FFT_Array), 2))
         for fil in range(len(self.FFT_Array)):
             for col in range(len(matrix[0])):
-                if (col == 0):
+                if col == 0:
                     matrix[fil][col] = self.FFT_Array[fil].real
-                if (col == 1):
+                if col == 1:
                     matrix[fil][col] = self.FFT_Array[fil].imag
         return matrix
 
-    def IFFT(self,Encrypted_FFT):
+    def IFFT(self,FFT_Array):
+        #Recbie FFTa de encrypt_to_FFT_ASCII o FFT de byte_toFFT  --> SON ARRAYS
+
         # First we decode bytes to array of complex numbers to apply IFFT
-        FFT_Array = self.Bytes2Array(Encrypted_FFT)
         array_imag = np.zeros(len(FFT_Array[:][0]), complex)
         for fil in range(len(FFT_Array[:][0])):
             array_imag[fil] = complex(FFT_Array[fil][0], FFT_Array[fil][1])
 
         self.IFFT_Array = ifft(array_imag)
-
         # Last we save results from IFFT to a .wav file
+
+    def create_Wav(self):
+        # Usa IFFT_Array  y crea un .wav
+        w = 0

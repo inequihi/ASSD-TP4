@@ -15,6 +15,20 @@ class Decrypt(Interpreter):
         self.data_matrix_FFT = None  # [ [1,2] [3,4] ]
 
 
+    def FFT_ASCII_to_encrypt(self, FFTa):
+        # Recibe FFTa de Interpreter.FFT
+        # Devuelve FFTe para aplicar algoritmo de desencriptacion
+        self.data_matrix_FFT = FFTa
+        str_answer = ""
+        for i in range(0, len(self.data_matrix_FFT)):
+            for j in range(0, len(self.data_matrix_FFT[i])):
+                str_answer += (chr(int(self.data_matrix_FFT[i][j])))
+
+        self.data_byte_enc = str_answer.encode("latin-1")
+        FFTe = self.data_byte_enc
+        return FFTe  # b'%5yu/223?'
+
+
     def Byte_to_FFT(self, byte_fft):
         i = 0
         k = 0
@@ -29,8 +43,8 @@ class Decrypt(Interpreter):
         else:
             size_FFT_arr = int((mas + menos) / 2)
 
-        # Creo array de FFTa
-        FFTa = np.zeros((size_FFT_arr, 2))
+        # Creo array de FFT
+        FFT = np.zeros((size_FFT_arr, 2))
         indexTemp = 0
 
         for i in range(size_FFT_arr):
@@ -50,16 +64,7 @@ class Decrypt(Interpreter):
                     else:
                         indexTemp = k + 1
                         break
-                FFTa[i][j] = float(StringTemp)  # Asigno valores
+                FFT[i][j] = float(StringTemp)  # Asigno valores
                 if (signoTemp == '-'):
-                    FFTa[i][j] = FFTa[i][j] * -1
-        return FFTa
-
-
-    def FFT_ASCII_to_encrypt(self):
-        str_answer = ""
-        for i in range(0, len(self.data_matrix_FFT)):
-            for j in range(0, len(self.data_matrix_FFT[i])):
-                str_answer += (chr(int(self.data_matrix_FFT[i][j])))
-
-        self.data_byte_enc = str_answer.encode("latin-1")
+                    FFT[i][j] = FFT[i][j] * -1
+        return FFT

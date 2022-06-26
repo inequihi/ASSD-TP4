@@ -1,4 +1,5 @@
 import Interpreter
+import numpy as np
 
 ##################################
 #           ENCRYPT              #
@@ -14,21 +15,22 @@ class Encrypt(Interpreter):
         self.data_matrix_FFT = None  # [ [1,2] [3,4] ]
 
 
-    def FFT_to_byte(self):
+    def FFT_to_byte(self, matrix):
+        self.data_matrix_FFT = matrix           # Recibe de funcion Interpreter.FFT()
         string = ""
         for fil in range(len(self.FFT_Array[:][0])):
             for col in range(len(self.FFT_Array[0])):
-                print("fila:", fil, "Col:", col)
                 if (self.FFT_Array[fil][col] >= 0):
                     string = string + "+" + str(self.FFT_Array[fil][col])
                 else:
                     string = string + "-" + str(-self.FFT_Array[fil][col])
-        arr2 = bytes(string, 'ascii')
-        return arr2
+        FFTb = bytes(string, 'ascii')
+        return FFTb
 
-    def Encrypt_to_FFT_ASCII(self, data):
+    def Encrypt_to_FFT_ASCII(self, FFTe):  # Recibe transformada de Fourier encriptada
+                                           # Devuelve array de FFT interpretando valores ASCII
 
-        self.data_byte_enc = data
+        self.data_byte_enc = FFTe
         str_data = self.data_byte_encripted.decode("latin-1")
         self.data_matrix_FFT = np.array([[0, 0]])
         for i in range(0, len(str_data), 2):
@@ -42,4 +44,6 @@ class Encrypt(Interpreter):
                 self.data_matrix_FFT = pre_answer
             else:
                 self.data_matrix_FFT = np.append(self.data_matrix_FFT, pre_answer, axis=0)
+        FFTa = self.data_matrix_FFT
 
+        return FFTa
