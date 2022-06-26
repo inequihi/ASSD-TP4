@@ -1,5 +1,6 @@
 from scipy.fft import fft, ifft
 from scipy.io import wavfile as wav
+import numpy as np
 
 #############################################
 #               INTERPRETER                 #
@@ -37,23 +38,30 @@ class Interpreter:
     def __init__(self):
         self.time_samples = None
         self.FFT_Array = None
-        self.FFT_Bytes = None
+        self.FFT_ASCII = None
         self.IFFT_Array = None
 
-    def FFT(self, path):
-        # First we read .wav file and apply Fast Fourier Transform
-        rate, audio_data = wav.read(path)
-        self.FFT_Array = fft(audio_data)
-
-        self.time_samples = audio_data
-
+    def FFT(self, signal):         # Recibe path de canción y devuelve la fft en formato matriz cuya columna 0
+                                   # es la parte real y la col 1 es la parte imaginaria
+                                   # First we read .wav file and apply Fast Fourier Transform
+        self.FFT_Array = fft(signal)
         # Last we encode FFT array of complex numbers to bytes to use the encryption algorithms
-        self.FFT_Bytes = self.Array2Bytes(self.FFT_Array)
+        matrix = np.zeros((len(self.FFT_Array), 2))
+        for fil in range(len(self.FFT_Array)):
+            for col in range(len(matrix[0])):
+                if (col == 0):
+                    matrix[fil][col] = self.FFT_Array[fil].real
+                if (col == 1):
+                    matrix[fil][col] = self.FFT_Array[fil].imag
+        return matrix
 
     def IFFT(self,Encrypted_FFT):
         # First we decode bytes to array of complex numbers to apply IFFT
         FFT_Array = self.Bytes2Array(Encrypted_FFT)
+        array_imag = np.zeros(len(FFT_Array[:][0]), complex)
+        for fil in range(len(FFT_Array[:][0])):
+            array_imag[fil] = complex(FFT_Array[fil][0], FFT_Array[fil][1])
 
-        self.IFFT_Array = ifft(FFT_Array)
+        self.IFFT_Array = ifft(array_imag)
 
         # Last we save results from IFFT to a .wav file

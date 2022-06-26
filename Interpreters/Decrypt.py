@@ -12,6 +12,7 @@ class Decrypt(Interpreter):
     def __init__(self):
         self.time_samples = None
 
+
     def Byte_to_FFT(self, byte_fft):
         i = 0
         k = 0
