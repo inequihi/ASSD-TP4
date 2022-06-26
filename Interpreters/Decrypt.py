@@ -1,5 +1,12 @@
 import Interpreter
 import numpy as np
+import struct
+
+from AES.aes import AES_Cipher
+from Blowfish.blowfish import BLOWFISH_Cipher
+
+from Crypto.Cipher import AES
+from Crypto.Cipher import Blowfish
 
 ##################################
 #           DECRYPT              #
@@ -13,6 +20,16 @@ class Decrypt(Interpreter):
         self.time_samples = None
         self.data_byte_enc = None  # b'%5yu/223?'
         self.data_matrix_FFT = None  # [ [1,2] [3,4] ]
+        self.cipher = None
+
+    def Encrypt_Process(self, algoritmo):
+        if algoritmo == "BLOW":
+            self.cipher = BLOWFISH_Cipher()
+
+        elif algoritmo == "AES":
+            self.cipher = AES_Cipher()
+        else:
+            print("pone un algoritmo crack")
 
 
     def FFT_ASCII_to_encrypt(self, FFTa):
@@ -24,17 +41,19 @@ class Decrypt(Interpreter):
             for j in range(0, len(self.data_matrix_FFT[i])):
                 str_answer += (chr(int(self.data_matrix_FFT[i][j])))
 
-        self.data_byte_enc = str_answer.encode("latin-1")
+        ################ NO FUNCIONA ####################
+        # self.data_byte_enc = str_answer.encode("latin-1")
+        # Convertimos respuesta en string a bytes sin encodear   'esta es mi string'
+        self.data_byte_enc = self.rawbytes(str_answer)          # b'esta es mi string'
         FFTe = self.data_byte_enc
         return FFTe  # b'%5yu/223?'
-
+        #################################################
 
     def Byte_to_FFT(self, byte_fft):
         i = 0
         k = 0
         size_FFT_arr = 0
         string_fft = byte_fft.decode(encoding='utf-8')
-
         # Obtengo size del FFT array
         mas = string_fft.count('+')  # +1+2+4+2-33+4 --> +1+2j  +4+2k -33+4j   --> 6 signos --> 3 elementos de matriz
         menos = string_fft.count('-')
@@ -68,3 +87,19 @@ class Decrypt(Interpreter):
                 if (signoTemp == '-'):
                     FFT[i][j] = FFT[i][j] * -1
         return FFT
+
+    def rawbytes(s):
+        """Convert a string to raw bytes without encoding"""
+        # https://stackoverflow.com/questions/42795042/how-to-cast-a-string-to-bytes-without-encoding
+        outlist = []
+        for cp in s:
+            num = ord(cp)
+            if num < 255:
+                outlist.append(struct.pack('B', num))
+            elif num < 65535:
+                outlist.append(struct.pack('>H', num))
+            else:
+                b = (num & 0xFF0000) >> 16
+                H = num & 0xFFFF
+                outlist.append(struct.pack('>bH', b, H))
+        return b''.join(outlist)

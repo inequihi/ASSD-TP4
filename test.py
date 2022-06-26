@@ -4,6 +4,7 @@ from Blowfish.blowfish import BLOWFISH_Cipher
 from Crypto.Cipher import AES
 from Crypto.Cipher import Blowfish
 
+
 def test_blowfish(data):
        print("\n ----- BLOWFISH ----- \n")
        MODE = Blowfish.MODE_ECB
@@ -69,8 +70,7 @@ def main():
               b"11.8181+38.9591i" \
               b"-34.5929+83.5147i" \
               b"172.209+-92.0479i"
-       print(data)
-       test_aes(data)
+       #test_aes(data)
        test_blowfish(data)
 
 if __name__=="__main__":

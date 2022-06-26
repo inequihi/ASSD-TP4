@@ -1,6 +1,12 @@
 import Interpreter
 import numpy as np
 
+from AES.aes import AES_Cipher
+from Blowfish.blowfish import BLOWFISH_Cipher
+
+from Crypto.Cipher import AES
+from Crypto.Cipher import Blowfish
+
 ##################################
 #           ENCRYPT              #
 ##################################
@@ -9,10 +15,21 @@ import numpy as np
 #   Encrypt_to_FFT_ASCII --> Parsea de encriptado (bytes) a ascii y con ese ascii armo un array FFT
 
 class Encrypt(Interpreter):
+
     def __init__(self):
         self.time_samples = None
         self.data_byte_enc = None  # b'%5yu/223?'
         self.data_matrix_FFT = None  # [ [1,2] [3,4] ]
+        self.cipher = None
+
+    def Encrypt_Process(self, algoritmo):
+        if algoritmo == "BLOW":
+            self.cipher = BLOWFISH_Cipher()
+
+        elif algoritmo == "AES":
+            self.cipher = AES_Cipher()
+        else:
+            print("pone un algoritmo crack")
 
 
     def FFT_to_byte(self, matrix):
@@ -31,9 +48,22 @@ class Encrypt(Interpreter):
                                            # Devuelve array de FFT interpretando valores ASCII
 
         self.data_byte_enc = FFTe
-        str_data = self.data_byte_encripted.decode("latin-1")
+        #str_data = self.data_byte_enc.decode("latin-1")
+        str_data = str(self.data_byte_enc)
+        str_data = str_data[2:-1]             # Le saco el b' y '
+
+            # data_byte_enc =  b'k\xa2\x98f\xf4\xca\x81m\xbc\xfb\xec\\'
+            # str_data = k\xa2\x98f\xf4\xca\x81m\xbc\xfb\xec\\
+
+        resto = (len(str_data)) % 2  # Vemos si es par
+        if (resto):
+            str_data += '\0'                            # Si tengo un largo impar, le agrego un caracter nulo que despues voy a descartar
+
+        print("str_Data con appendeado: ", str_data)
+
         self.data_matrix_FFT = np.array([[0, 0]])
         for i in range(0, len(str_data), 2):
+
             word1 = str_data[i]
             word1_ASCII = ord(word1)
             word2 = str_data[i + 1]
