@@ -38,16 +38,16 @@ class Interpreter:
         self.FFT_Array = None
         self.FFT_ASCII = None
         self.IFFT_Array = None
-        self.signal = None
+        self.signal_in = None
         self.time = None
-
+        self.fs = None
     def Read_Wav(self,path):
-        self.signal = 0
-        self.time = 0
-        # Signal y time son miembro
+        sample_rate, samples = wav.read(path)
+        self.fs = sample_rate
+        return samples
 
-        return 0
-
+    def create_Wav(self, signal, name_wav ):
+        wav.write( name_wav, self.fs, signal.astype(np.int16))
 
     def FFT(self):         # No recibe nada y devuelve la fft en formato matriz cuya columna 0
                                    # es la parte real y la col 1 es la parte imaginaria
@@ -74,6 +74,3 @@ class Interpreter:
         self.IFFT_Array = ifft(array_imag)
         # Last we save results from IFFT to a .wav file
 
-    def create_Wav(self):
-        # Usa IFFT_Array  y crea un .wav
-        w = 0
