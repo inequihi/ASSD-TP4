@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="stop">
+    <file>stop.png</file>
+  </qresource>
+</RCC>
