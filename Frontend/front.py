@@ -4,6 +4,7 @@ import Frontend.src.ui.notes50x50
 import Frontend.src.ui.play
 import Frontend.src.ui.pause
 import Frontend.src.ui.stop
+import Frontend.src.ui.copy
 
 if __name__ == '__main__':
 
