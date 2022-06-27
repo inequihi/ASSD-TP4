@@ -1,9 +1,9 @@
 from src.menu import MenuWindow
 from PyQt5.QtWidgets import QApplication
-import src.ui.nota
-import src.ui.play
-import src.ui.pause
-import src.ui.stop
+import Frontend.src.ui.notes50x50
+import Frontend.src.ui.play
+import Frontend.src.ui.pause
+import Frontend.src.ui.stop
 
 if __name__ == '__main__':
 
