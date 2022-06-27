@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import *
 from Frontend.src.ui.menu import Ui_Menu
 from pathlib import Path
+from Frontend.counter import *
 import Frontend.src.ui.notes50x50
 import Frontend.src.ui.play
 import Frontend.src.ui.pause
@@ -19,6 +20,34 @@ class MenuWindow (QWidget, Ui_Menu):
         self.MplWidget_2.show_toolbar(self.verticalLayout_10)
         self.MplWidget_5.show_toolbar(self.Toolbar1_3)
         self.MplWidget_6.show_toolbar(self.verticalLayout_14)
+
+
+        #COUNTER
+        self.first_time_O = 0
+        self.pausa_O = False
+        self.play_O = True
+        self.pause_O = True
+
+        self.first_time_E = 0
+        self.pausa_E = False
+        self.play_E = True
+        self.pause_E = True
+
+        self.first_time_E2 = 0
+        self.pausa_E2 = False
+        self.play_E2 = True
+        self.pause_E2 = True
+
+        self.first_time_D = 0
+        self.pausa_D = False
+        self.play_D = True
+        self.pause_D = True
+
+        self.counter1 = Counter_O(self, 4)      #FALTA DURACION DE LA CANCICON
+        self.counter2 = Counter_E(self, 4)
+        self.counter3 = Counter_E2(self, 4)
+        self.counter4 = Counter_D(self, 4)
+
 
 
         #HIDES
@@ -137,44 +166,149 @@ class MenuWindow (QWidget, Ui_Menu):
 
     def play_song_O(self):
         print("PLAY ORIGINAL")
+        if self.first_time_O == 0:
+            self.pausa_O = False
+            self.counter1.start_thread()
+            self.first_time_O = 1
+        if self.pausa_O == False:
+            self.counter1.pause_loop = False
+            #plau spmg in back
+        else:
+            if(self.play_O):
+                self.pause_O = True
+                self.counter1.pause_loop = False
+                #resume song back
+                self.play_O = False
 
     def pause_song_O(self):
         print("PAUSA ORIGINAL")
+        if (self.pause_O):
+            self.pausa_O = True
+            self.play_O = True
+            self.pause_O = False
+            self.counter1.pause_loop = True
+            #paise in back
 
     def reset_song_O(self):
         print("STOP ORIGINAL")
+        self.play_O = False
+        self.pausa_O = False
+        self.pause_O = True
+        self.counter1.reset_loop = True
+        self.counter1.start()
+        #pausame reproduccion en el back
+        #pone play en el back
 
 
 
     def play_song_E(self):
         print("PLAY ENCRYPTADO")
+        if self.first_time_E == 0:
+            self.pausa_E = False
+            self.counter2.start_thread()
+            self.first_time_E = 1
+        if self.pausa_E == False:
+            self.counter2.pause_loop = False
+            # plau spmg in back
+        else:
+            if (self.play_E):
+                self.pause_E = True
+                self.counter2.pause_loop = False
+                # resume song back
+                self.play_E = False
 
     def pause_song_E(self):
         print("PAUSA ENCRYPTADO")
+        if (self.pause_E):
+            self.pausa_E = True
+            self.play_E = True
+            self.pause_E = False
+            self.counter2.pause_loop = True
+            #paise in back
 
     def reset_song_E(self):
         print("STOP ENCRYPTADO")
+        self.play_E = False
+        self.pausa_E = False
+        self.pause_E = True
+        self.counter2.reset_loop = True
+        self.counter2.start()
+        # pausame reproduccion en el back
+        # pone play en el back
 
 
 
 
     def play_song_E2(self):
         print("PLAY ENCRYPTADO CARGADO")
+        if self.first_time_E2 == 0:
+            self.pausa_E2 = False
+            self.counter3.start_thread()
+            self.first_time_E2 = 1
+        if self.pausa_E2 == False:
+            self.counter3.pause_loop = False
+            # plau spmg in back
+        else:
+            if (self.play_E2):
+                self.pause_E2 = True
+                self.counter3.pause_loop = False
+                # resume song back
+                self.play_E2 = False
 
     def pause_song_E2(self):
         print("PAUSA ENCRYPTADO CARGADO")
+        if (self.pause_E2):
+            self.pausa_E2 = True
+            self.play_E2 = True
+            self.pause_E2 = False
+            self.counter3.pause_loop = True
+            #paise in back
 
     def reset_song_E2(self):
         print("STOP ENCRYPTADO CARGADO")
+        self.play_E2 = False
+        self.pausa_E2 = False
+        self.pause_E2 = True
+        self.counter3.reset_loop = True
+        self.counter3.start()
+        # pausame reproduccion en el back
+        # pone play en el back
 
 
 
 
     def play_song_D(self):
         print("PLAY DESENCRYPTADO")
+        if self.first_time_D == 0:
+            self.pausa_D = False
+            self.counter4.start_thread()
+            self.first_time_D = 1
+        if self.pausa_D == False:
+            self.counter4.pause_loop = False
+            # plau spmg in back
+        else:
+            if (self.play_D):
+                self.pause_D = True
+                self.counter4.pause_loop = False
+                # resume song back
+                self.play_D = False
+
 
     def pause_song_D(self):
         print("PAUSA DESENCRYPTADO")
+        if (self.pause_D):
+            self.pausa_D = True
+            self.play_D = True
+            self.pause_D = False
+            self.counter4.pause_loop = True
+            #paise in back
 
     def reset_song_D(self):
         print("STOP DESENCRYPTADO")
+        self.play_D = False
+        self.pausa_D = False
+        self.pause_D = True
+        self.counter4.reset_loop = True
+        self.counter4.start()
+        # pausame reproduccion en el back
+        # pone play en el back
