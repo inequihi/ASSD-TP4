@@ -38,7 +38,7 @@ class Interpreter:
         self.FFT_Array = None
         self.FFT_ASCII = None
         self.IFFT_Array = None
-        self.signal_in = None
+        self.signal = None
         self.time = None
         self.fs = None
     def Read_Wav(self,path):
