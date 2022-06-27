@@ -40,7 +40,7 @@ def test_aes(data):
        print("Data desencriptada: \n",plain_data)
 
 def test_encrypt_signal():
-       path = "c:/00 - Ignacio/Workshop/ASSD-TP4/beep.wav"
+       path = "Flauta-LA.wav"
        Encriptacion = Encrypt()
        Encriptacion.encrypt_wav(path, "BLOW","cbc")
 

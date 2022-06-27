@@ -21,7 +21,6 @@ class Decrypt(Interpreter):
         self.data_byte_enc = None  # b'%5yu/223?'
         self.data_matrix_FFT = None  # [ [1,2] [3,4] ]
         self.cipher = None
-        self.signal = None
         self.signal_decrypt= None
         self.fft_decrypt = None
 
@@ -33,10 +32,10 @@ class Decrypt(Interpreter):
         self.signal_decrypt = self.IFFT( self.fft_decrypt)
         self.create_Wav(self.signal_decrypt, wav)
 
-    def Decrypt_Process(self, algoritmo, KEY, MODE, cipher_data, cipher_IV=None):
-        if algoritmo == "BLOW":
+    def Decrypt_Process(self,wav, process_type, mode, algoritmo, KEY, MODE, cipher_data, cipher_IV=None):
+        if process_type == "BLOW":
             self.cipher = BLOWFISH_Cipher()
-        elif algoritmo == "AES":
+        elif process_type == "AES":
             self.cipher = AES_Cipher()
         else:
             print("pone un algoritmo crack")

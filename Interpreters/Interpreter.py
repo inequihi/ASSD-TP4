@@ -28,7 +28,7 @@ from utils.percentage_for import percentage_for
 #   Decrypt --> Aplica algoritmo de encriptaicon
 #       Recibe:
 #       Devuelve:
-#   Create_Wav --> Guarda señal de audio en el tiempo a .wav
+#   Create_Wav --> Guarda seÃ±al de audio en el tiempo a .wav
 #       Recibe:
 #       Devuelve:
 
@@ -45,7 +45,8 @@ class Interpreter:
     def Read_Wav(self,path):
         sample_rate, samples = wav.read(path)
         self.fs = sample_rate
-        return samples[:,0]
+        #return samples[:,0]
+        return samples
 
     def create_Wav(self, signal, name_wav ):
         wav.write( name_wav, self.fs, signal.astype(np.int16))
@@ -88,3 +89,5 @@ class Interpreter:
         self.IFFT_Array = ifft(array_imag)
         return self.IFFT_Array
         # Last we save results from IFFT to a .wav file
+
+
