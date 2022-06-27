@@ -75,7 +75,7 @@ class MenuWindow (QWidget, Ui_Menu):
         #desencryptacion
         self.Button_Upload_Encrypt.clicked.connect(self.get_encrypt_file)
         self.Button_Desencrypt.clicked.connect(self.desencrypt_message)
-        self.Button_CreateWAV_Desencrypt.clicked.connect(self.descreate_encrypy_wav)
+        self.Button_CreateWAV_Desencrypt.clicked.connect(self.create_desencrypy_wav)
 
         #RECORDING BUTTONS
         self.pushButton_play_O.clicked.connect(self.play_song_O)
@@ -96,13 +96,17 @@ class MenuWindow (QWidget, Ui_Menu):
 
 
 
+    #FUNCTIONS
 
 
+    #FUNCTIONS GET FILE UPLOAD
     def get_message_file(self):
         print("upload")
         filename = QFileDialog.getOpenFileNames()
         self.original_path = filename[0][0]
         self.original_path_name = Path(self.original_path)
+
+        #self.horizontalSlider_Original.setMaximum(int(self.back.song.duration))
 
 
     def get_encrypt_file(self):
@@ -111,8 +115,9 @@ class MenuWindow (QWidget, Ui_Menu):
         self.encrypt_path = filename[0][0]
         self.encrypt_path_name = Path(self.encrypt_path)
 
+#############################################################################################
 
-
+    #FUNCTIONS MESSAGES
     def encrypt_message(self):
         print("Encrypt")
         if (self.radioButton_AES.isChecked()) == 0 and (self.radioButton_Blowfish.isChecked()) == 0:
@@ -125,10 +130,6 @@ class MenuWindow (QWidget, Ui_Menu):
 
             self.label_KEY.show()
 
-    def create_encrypy_wav(self):
-        print("CREO WAV ENCRYPTADO")
-
-
 
     def desencrypt_message(self):
         print("Desencrypt")
@@ -138,17 +139,36 @@ class MenuWindow (QWidget, Ui_Menu):
         else:
             self.label_incorrect_D.hide()
 
+#############################################################################################
 
-    def descreate_encrypy_wav(self):
+    #FUCTIONS CREATE WAVS
+    def create_encrypy_wav(self):
+        print("CREO WAV ENCRYPTADO")
+        wav_path = Path(self.encrypt_path_name)
+        wav_path = Path(str(wav_path.parent) + '/' + str(wav_path.stem) + '.wav')
+        print(wav_path)
+        #self.back.save_wav_file(wav_path)
+
+
+    def create_desencrypy_wav(self):
         print("CREO WAV DESENCRYPTADO")
+        wav_path = Path(self.original_path)
+        wav_path = Path(str(wav_path.parent) + '/' + str(wav_path.stem) + '.wav')
+        print(wav_path)
+        # self.back.save_wav_file(wav_path)
 
+#############################################################################################
+
+    #FUNCTION OF COPY
     def copy(self):
         self.CtrlC = QApplication.clipboard()
         self.CtrlC.clear(mode=self.CtrlC.Clipboard)
         self.CtrlC.setText(self.label_KEY.text(), mode=self.CtrlC.Clipboard)
         print("COPY")
 
+#############################################################################################
 
+    #FUCTIONS PUT GREEN
     def put_green_red_encrypt(self):
         self.Button_Encrypt.setStyleSheet("background: green;\n"
                                                  "color: white;")
@@ -161,6 +181,7 @@ class MenuWindow (QWidget, Ui_Menu):
             self.Button_Desencrypt.setStyleSheet("background: green;\n"
                                                  "color: white;")
 
+#############################################################################################
 
     #RECORDING BUTTONS
 
@@ -312,3 +333,5 @@ class MenuWindow (QWidget, Ui_Menu):
         self.counter4.start()
         # pausame reproduccion en el back
         # pone play en el back
+
+#############################################################################################
