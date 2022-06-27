@@ -1,6 +1,7 @@
 from scipy.fft import fft, ifft
 from scipy.io import wavfile as wav
 import numpy as np
+from utils.percentage_for import percentage_for
 
 #############################################
 #               INTERPRETER                 #
@@ -61,7 +62,7 @@ class Interpreter:
                     matrix[fil][col] = self.FFT_Array[fil][col].real
                 if col == 1:
                     matrix[fil][col] = self.FFT_Array[fil][col].imag
-            print(fil)
+            percentage_for(fil, len(self.FFT_Array))
         return matrix
 
     def IFFT(self,FFT_Array):
