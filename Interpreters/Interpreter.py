@@ -1,4 +1,4 @@
-from scipy.fft import fft, ifft
+from scipy.fft import fft, ifft, fftfreq
 from scipy.io import wavfile as wav
 import numpy as np
 from utils.percentage_for import percentage_for
@@ -45,7 +45,7 @@ class Interpreter:
     def Read_Wav(self,path):
         sample_rate, samples = wav.read(path)
         self.fs = sample_rate
-        return samples
+        return samples[:,0]
 
     def create_Wav(self, signal, name_wav ):
         wav.write( name_wav, self.fs, signal.astype(np.int16))
@@ -54,16 +54,26 @@ class Interpreter:
                                    # es la parte real y la col 1 es la parte imaginaria
                                    # First we read .wav file and apply Fast Fourier Transform
         self.FFT_Array = fft(self.signal)
+        freq = fftfreq(len(self.signal), 1/self.fs)
+        for i in range(len(freq)):
+            if (freq[i] > 200):
+                w = i
+                break
+        self.FFT_Array = self.FFT_Array[:w]
         # Last we encode FFT array of complex numbers to bytes to use the encryption algorithms
         matrix = np.zeros((len(self.FFT_Array), 2))
         for fil in range(len(self.FFT_Array)):
             for col in range(len(matrix[0])):
                 if col == 0:
-                    matrix[fil][col] = self.FFT_Array[fil][col].real
+                    matrix[fil][col] = self.FFT_Array[fil].real
                 if col == 1:
-                    matrix[fil][col] = self.FFT_Array[fil][col].imag
+                    matrix[fil][col] = self.FFT_Array[fil].imag
             percentage_for(fil, len(self.FFT_Array))
         return matrix
+
+
+
+
 
     def IFFT(self,FFT_Array):
         #Recbie FFTa de encrypt_to_FFT_ASCII o FFT de byte_toFFT  --> SON ARRAYS
@@ -72,7 +82,9 @@ class Interpreter:
         array_imag = np.zeros(len(FFT_Array[:][0]), complex)
         for fil in range(len(FFT_Array[:][0])):
             array_imag[fil] = complex(FFT_Array[fil][0], FFT_Array[fil][1])
-
+        conjugado = np.conj(array_imag)
+        conj = np.flip(conjugado)
+        array_imag = np.append(array_imag, conj)
         self.IFFT_Array = ifft(array_imag)
+        return self.IFFT_Array
         # Last we save results from IFFT to a .wav file
-

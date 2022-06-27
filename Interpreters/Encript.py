@@ -40,13 +40,16 @@ class Encrypt(Interpreter):
         self.data_matrix_FFT = matrix           # Recibe de funcion Interpreter.FFT()
         string = ""
 
-        for fil in range(len(self.FFT_Array)):
-            for col in range(len(self.FFT_Array[0])):
-                if (self.FFT_Array[fil][col] >= 0):
-                    string = string + "+" + str(self.FFT_Array[fil][col])
+        for fil in range(len(self.data_matrix_FFT[:,0])):
+            for col in range(len(self.data_matrix_FFT[0, :])):
+
+
+                if (self.data_matrix_FFT[fil][col] >= 0):
+                    string = string + "+" + str(abs(self.data_matrix_FFT[fil][col]))
                 else:
-                    string = string + "-" + str(-self.FFT_Array[fil][col])
-            percentage_for(fil, len(self.FFT_Array))
+                    string = string + "-" + str(abs(self.data_matrix_FFT[fil][col]))
+
+            percentage_for(fil, len(self.data_matrix_FFT))
 
         FFTb = bytes(string, 'ascii')
         return FFTb
@@ -102,7 +105,7 @@ class Encrypt(Interpreter):
             FFTa = self.Encrypt_to_FFT_ASCII(FFTe)
             self.key = self.cipher.get_key()
             wav_answer = self.IFFT(FFTa)
-            self.create_Wav(wav_answer)
+            self.create_Wav(wav_answer, "encriptado.wav")
 
         elif(self.cipher.status == 0):
             print("La encriptacion no fue correcta")
