@@ -4,6 +4,7 @@ from Blowfish.blowfish import BLOWFISH_Cipher
 from Crypto.Cipher import AES
 from Crypto.Cipher import Blowfish
 
+from Interpreters.Encript import Encrypt
 
 def test_blowfish(data):
        print("\n ----- BLOWFISH ----- \n")
@@ -38,6 +39,12 @@ def test_aes(data):
        plain_data = test2.get_plain_data()
        print("Data desencriptada: \n",plain_data)
 
+def test_encrypt_signal():
+       path = "c:/00 - Ignacio/Workshop/ASSD-TP4/pinar.wav"
+       Encriptacion = Encrypt()
+       Encriptacion.encrypt_wav(path,1)
+
+
 
 def main():
        data = b"2+0i" \
@@ -71,7 +78,10 @@ def main():
               b"-34.5929+83.5147i" \
               b"172.209+-92.0479i"
        #test_aes(data)
-       test_blowfish(data)
+       #test_blowfish(data)
+       test_encrypt_signal()
+
+
 
 if __name__=="__main__":
        main()
