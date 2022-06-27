@@ -38,7 +38,7 @@ class Interpreter:
         self.FFT_Array = None
         self.FFT_ASCII = None
         self.IFFT_Array = None
-        self.signal_in = None
+        self.signal = None
         self.time = None
         self.fs = None
     def Read_Wav(self,path):
@@ -58,9 +58,10 @@ class Interpreter:
         for fil in range(len(self.FFT_Array)):
             for col in range(len(matrix[0])):
                 if col == 0:
-                    matrix[fil][col] = self.FFT_Array[fil].real
+                    matrix[fil][col] = self.FFT_Array[fil][col].real
                 if col == 1:
-                    matrix[fil][col] = self.FFT_Array[fil].imag
+                    matrix[fil][col] = self.FFT_Array[fil][col].imag
+            print(fil)
         return matrix
 
     def IFFT(self,FFT_Array):

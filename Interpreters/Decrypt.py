@@ -21,16 +21,27 @@ class Decrypt(Interpreter):
         self.data_byte_enc = None  # b'%5yu/223?'
         self.data_matrix_FFT = None  # [ [1,2] [3,4] ]
         self.cipher = None
+        self.signal = None
+        self.signal_decrypt= None
+        self.fft_decrypt = None
 
-    def Encrypt_Process(self, algoritmo):
+    def decrypt_wav(self, wav, algoritmo, KEY, MODE, cipher_IV) :
+        self.signal = self.Read_Wav(wav)
+        self.data_matriz_FTT = self.FFT()
+        self.data_byte_enc = self.FFT_ASCII_to_encrypt(self.data_matriz_FTT)
+        self.fft_decrypt =self.Byte_to_FFT(self.Decrypt_Process(algoritmo, KEY, MODE, self.data_byte_enc, cipher_IV))
+        self.signal_decrypt = self.IFFT( self.fft_decrypt)
+        self.create_Wav(self.signal_decrypt, wav)
+
+    def Decrypt_Process(self, algoritmo, KEY, MODE, cipher_data, cipher_IV=None):
         if algoritmo == "BLOW":
             self.cipher = BLOWFISH_Cipher()
-
         elif algoritmo == "AES":
             self.cipher = AES_Cipher()
         else:
             print("pone un algoritmo crack")
-
+        self.cipher.Decrypt(KEY, MODE, cipher_data, cipher_IV)
+        return self.cipher.plain_data
 
     def FFT_ASCII_to_encrypt(self, FFTa):
         # Recibe FFTa de Interpreter.FFT
@@ -41,13 +52,12 @@ class Decrypt(Interpreter):
             for j in range(0, len(self.data_matrix_FFT[i])):
                 str_answer += (chr(int(self.data_matrix_FFT[i][j])))
 
-        ################ NO FUNCIONA ####################
-        # self.data_byte_enc = str_answer.encode("latin-1")
-        # Convertimos respuesta en string a bytes sin encodear   'esta es mi string'
-        self.data_byte_enc = self.rawbytes(str_answer)          # b'esta es mi string'
+        b_answer = str_answer.encode("latin-1")
+
+        self.data_byte_enc = b_answer
         FFTe = self.data_byte_enc
         return FFTe  # b'%5yu/223?'
-        #################################################
+
 
     def Byte_to_FFT(self, byte_fft):
         i = 0
