@@ -1,11 +1,13 @@
 from Interpreters.Interpreter import Interpreter
 import numpy as np
 
+
 from AES.aes import AES_Cipher
 from Blowfish.blowfish import BLOWFISH_Cipher
 
 from Crypto.Cipher import AES
 from Crypto.Cipher import Blowfish
+from utils.percentage_for import percentage_for
 
 ##################################
 #           ENCRYPT              #
@@ -37,13 +39,15 @@ class Encrypt(Interpreter):
     def FFT_to_byte(self, matrix):
         self.data_matrix_FFT = matrix           # Recibe de funcion Interpreter.FFT()
         string = ""
+
         for fil in range(len(self.FFT_Array)):
             for col in range(len(self.FFT_Array[0])):
                 if (self.FFT_Array[fil][col] >= 0):
                     string = string + "+" + str(self.FFT_Array[fil][col])
                 else:
                     string = string + "-" + str(-self.FFT_Array[fil][col])
-            print(fil)
+            percentage_for(fil, len(self.FFT_Array))
+
         FFTb = bytes(string, 'ascii')
         return FFTb
 
@@ -58,12 +62,13 @@ class Encrypt(Interpreter):
             str_data += '\0'         # Si tengo un largo impar, le agrego un caracter nulo que despues voy a descartar
 
         self.data_matrix_FFT = np.array([[0, 0]])
-
+        print(len(str_data))
         for i in range(0, len(str_data), 2):
             word1 = str_data[i]
             word1_ASCII = ord(word1)
             word2 = str_data[i + 1]
             word2_ASCII = ord(word2)
+            percentage_for(i, len(str_data))
 
             pre_answer = np.array([[int(word1_ASCII), int(word2_ASCII)]])
             if (i == 0):
@@ -74,7 +79,7 @@ class Encrypt(Interpreter):
 
         return FFTa
 
-    def encrypt_wav(self, wav, MODE):
+    def encrypt_wav(self, wav, process_type, mode):
 
 
         self.signal = self.Read_Wav(wav)   #Si bien la funcion devuelve un samples, esa informacion ya esta guardada en self.fs
@@ -82,6 +87,8 @@ class Encrypt(Interpreter):
         FFT = self.FFT()
 
         FFTb = self.FFT_to_byte(FFT)
+
+        self.Encrypt_Process(process_type)
         if(mode == "ecb"):
             MODE = Blowfish.MODE_ECB
         elif(mode == "cbc"):
