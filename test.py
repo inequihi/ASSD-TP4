@@ -4,7 +4,8 @@ from Blowfish.blowfish import BLOWFISH_Cipher
 from Crypto.Cipher import AES
 from Crypto.Cipher import Blowfish
 
-from Interpreters.Encript import Encrypt
+from Interpreters.Encrypt import Encrypt
+from Interpreters.Decrypt import Decrypt
 
 def test_blowfish(data):
        print("\n ----- BLOWFISH ----- \n")
@@ -40,9 +41,31 @@ def test_aes(data):
        print("Data desencriptada: \n",plain_data)
 
 def test_encrypt_signal():
-       path = "c:/00 - Ignacio/Workshop/ASSD-TP4/beep.wav"
+       path = "Raw_Wavs/Flauta-LA.wav"
        Encriptacion = Encrypt()
-       Encriptacion.encrypt_wav(path, "BLOW","cbc")
+       Encriptacion.encrypt_wav(path, "BLOW","ecb")
+
+       tamaño = len(Encriptacion.get_FFTfreq())
+       ifftencry = Encriptacion.get_IFFTArray()
+
+       key = Encriptacion.get_key()
+       #print("\n KEY \n",key)
+
+       Decriptacion = Decrypt()
+
+       Decriptacion.set_Max2Norm(Encriptacion.get_max2norm())
+
+       # HArdocdeo FFTa
+       Decriptacion.set_FFTa(Encriptacion.get_FFTa())
+
+       #Hardocdeo IFFT
+       Decriptacion.set_IFFTEncrypt(ifftencry)
+
+       # Si o si necesitamos tamaño para IFFTDecrypt
+       Decriptacion.set_TamañoSignalOriginal(tamaño)
+
+       Decriptacion.decrypt_wav("encriptado.wav","BLOW",key,"ecb")
+
 
 
 
@@ -80,6 +103,7 @@ def main():
        #test_aes(data)
        #test_blowfish(data)
        test_encrypt_signal()
+
 
 
 

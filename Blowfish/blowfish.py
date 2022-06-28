@@ -56,7 +56,7 @@ class BLOWFISH_Cipher:
             cipher_object = Blowfish.new(KEY, MODE)
 
         elif MODE == Blowfish.MODE_CBC:
-            cipher_object = Blowfish.new(KEY, MODE, b64decode(cipher_IV))
+            cipher_object = Blowfish.new(KEY, MODE, b64decode(chr(cipher_IV)))
 
         self.plain_data = unpad(cipher_object.decrypt(cipher_data), Blowfish.block_size)
         self.status = 2
