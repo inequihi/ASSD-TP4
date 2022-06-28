@@ -52,6 +52,7 @@ class Encrypt(Interpreter):
             percentage_for(fil, len(self.data_matrix_FFT))
 
         FFTb = bytes(string, 'ascii')
+        print("\nFFTb\n",FFTb)
         return FFTb
 
     def Encrypt_to_FFT_ASCII(self, FFTe):  # Recibe transformada de Fourier encriptada
@@ -79,14 +80,12 @@ class Encrypt(Interpreter):
             else:
                 self.data_matrix_FFT = np.append(self.data_matrix_FFT, pre_answer, axis=0)
         FFTa = self.data_matrix_FFT
-
+        print("\nFFTa\n",FFTa)
         return FFTa
 
     def encrypt_wav(self, wav, process_type, mode):
-
-
         self.signal = self.Read_Wav(wav)   #Si bien la funcion devuelve un samples, esa informacion ya esta guardada en self.fs
-
+        print("\nencrypt wav señal original\n",self.signal)
         FFT = self.FFT()
 
         FFTb = self.FFT_to_byte(FFT)

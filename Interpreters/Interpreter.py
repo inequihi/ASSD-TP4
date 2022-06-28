@@ -49,6 +49,7 @@ class Interpreter:
         return samples
 
     def create_Wav(self, signal, name_wav ):
+        print("\nsignal que llega a Create Wav\n",signal)
         wav.write( name_wav, self.fs, signal.astype(np.int16))
 
     def FFT(self):         # No recibe nada y devuelve la fft en formato matriz cuya columna 0
@@ -80,13 +81,18 @@ class Interpreter:
         #Recbie FFTa de encrypt_to_FFT_ASCII o FFT de byte_toFFT  --> SON ARRAYS
 
         # First we decode bytes to array of complex numbers to apply IFFT
-        array_imag = np.zeros(len(FFT_Array[:][0]), complex)
-        for fil in range(len(FFT_Array[:][0])):
+        array_imag = np.zeros(len(FFT_Array), complex)
+        print(len(FFT_Array))
+        for fil in range(len(FFT_Array)):
             array_imag[fil] = complex(FFT_Array[fil][0], FFT_Array[fil][1])
+
+        print("\nFFTa interpretado como complejo\n",array_imag)
         conjugado = np.conj(array_imag)
         conj = np.flip(conjugado)
         array_imag = np.append(array_imag, conj)
-        self.IFFT_Array = ifft(array_imag)
+        print(array_imag)
+        self.IFFT_Array = ifft(array_imag).real
+        print("\nIFFTencrypted result\n", self.IFFT_Array)
         return self.IFFT_Array
         # Last we save results from IFFT to a .wav file
 
