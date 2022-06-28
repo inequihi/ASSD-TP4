@@ -3,6 +3,7 @@ import numpy as np
 from scipy.io import wavfile as wav
 from scipy.fft import fft, ifft, fftfreq
 
+import simpleaudio as sa
 
 from AES.aes import AES_Cipher
 from Blowfish.blowfish import BLOWFISH_Cipher
@@ -29,7 +30,7 @@ class Encrypt(Interpreter):
         self.FTT = None
         self.FFTe = None
 
-    def encrypt_wav(self, wav, process_type, mode):
+    def encrypt_wav(self, wav, process_type, mode, NombreArchivoNuevo):
         self.signal = self.Read_Wav(wav)   #Si bien la funcion devuelve un samples, esa informacion ya esta guardada en self.fs
         print("\nencrypt wav señal original\n",self.signal)
         FFT = self.FFTEncrypt()
@@ -47,7 +48,16 @@ class Encrypt(Interpreter):
             FFTa = self.Encrypt_to_FFT_ASCII(FFTe)
             self.key = self.cipher.get_key()
             wav_answer = self.IFFTEncrypt(FFTa)
-            self.create_Wav(wav_answer, "encriptado.wav")
+            self.create_Wav(wav_answer, NombreArchivoNuevo+ ".wav")
+            f = open(NombreArchivoNuevo + ".txt","w+")
+            f.write(str(len(self.FFT_Freq)) + "\n" + str(self.Max2Norm.real) + "\n")
+
+            if self.Process == Blowfish.MODE_CBC or self.Process == AES.MODE_CBC:
+                Cipher_IV_str = self.get_CipherIV()
+                f.write(Cipher_IV_str + "\n")
+
+            f.close()
+
 
         elif(self.cipher.status == 0):
             print("La encriptacion no fue correcta")
@@ -55,16 +65,21 @@ class Encrypt(Interpreter):
     def Encrypt_Process(self, algoritmo,mode):
         if algoritmo == "BLOW":
             self.cipher = BLOWFISH_Cipher()
+            if (mode == "ecb"):
+                self.Process = Blowfish.MODE_ECB
+            elif (mode == "cbc"):
+                self.Process = Blowfish.MODE_CBC
 
         elif algoritmo == "AES":
             self.cipher = AES_Cipher()
+            if (mode == "ecb"):
+                self.Process = AES.MODE_ECB
+            elif (mode == "cbc"):
+                self.Process = AES.MODE_CBC
         else:
             print("pone un algoritmo crack")
 
-        if (mode == "ecb"):
-            self.Process = Blowfish.MODE_ECB
-        elif (mode == "cbc"):
-            self.Process = Blowfish.MODE_CBC
+
 
 
     def FFT_to_byte(self, matrix):
@@ -137,13 +152,20 @@ class Encrypt(Interpreter):
         for fil in range(len(FFTa)):
             array_imag[fil] = complex(FFTa[fil][0], FFTa[fil][1])
 
-        # Hacemos a la FFT simetrica
-        conjugado = np.conj(array_imag)
-        conj = np.flip(conjugado)
-        array_imag = np.append(array_imag, conj)
+        if(len(array_imag)%2):
+            # Hacemos a la FFT simetrica
+            conjugado = np.conj(array_imag[1:])
+            conj = np.flip(conjugado)
+            array_imag = np.append(array_imag, conj)
+        else:
+            conjugado = np.conj(array_imag)
+            conj = np.flip(conjugado)
+            array_imag = np.append(array_imag, conj)
+
         print("\n Array Image\n", array_imag)
 
         self.IFFT_Array = ifft(array_imag)
+
         print("\nEncrypt: Samples 2 encrypted wav\n",self.IFFT_Array)
         # FFTDECRYPT(IFFT ENCRYPT (FFTa)) = FFTa
 
@@ -179,6 +201,52 @@ class Encrypt(Interpreter):
         print("\nEncrypt: FFT limitada en freq\n", self.FFT_Array)
         return matrix
 
+ ###### GUI ######
+
+    def play_signal_O(self, signal):
+        signal *= 32767 / np.max(np.abs(signal))
+        signal = signal.astype(np.int16)
+        self.play_O = sa.play_buffer(signal, 1, 2, int(self.fs))
+        # self.play.wait_done()
+
+    def play_O(self):
+        if self.signal is not None:
+            self.play_signal_O(self.signal)
+
+    def pause_reproduction_O(self):
+        # if self.play.isplaying() and self.play is not None:
+        if self.play_O is not None:
+            self.play_O.stop()
+        else:
+            return -1
+
+    def resume_song_O(self, time):
+        if self.signal is not None:
+            self.play_signal_O(self.signal[int(time * self.fs):])
+
+    ###### Play signal encrypted ( falta guardar la seÃ±al encryptada en la clase )
+
+    def play_signal_E(self, signal):
+        signal *= 32767 / np.max(np.abs(signal))
+        signal = signal.astype(np.int16)
+        self.play_E = sa.play_buffer(signal, 1, 2, int(self.fs))
+        # self.play.wait_done()
+
+    def play_E(self):
+        if self.signal is not None:
+            self.play_signal_O(self.signal)
+
+    def pause_reproduction_E(self):
+        # if self.play.isplaying() and self.play is not None:
+        if self.play_E is not None:
+            self.play_E.stop()
+        else:
+            return -1
+
+    def resume_song_E(self, time):
+        if self.signal is not None:
+            self.play_signal_E(self.signal[int(time * self.fs):])
+
 
     # GETTERS
     def get_key(self):
@@ -190,4 +258,10 @@ class Encrypt(Interpreter):
     def get_IFFTArray(self):
         return self.IFFT_Array
 
-
+    def get_CipherIV(self):
+        if self.Process == Blowfish.MODE_CBC or self.Process == AES.MODE_CBC:
+            print("\nCIPHER IV DIRECTO", self.cipher.get_cipher_IV())
+            return self.cipher.get_cipher_IV()
+        else:
+            print("\n \n ERROR no es CBC \n \n")
+            return "Error"

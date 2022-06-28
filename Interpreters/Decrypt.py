@@ -5,6 +5,7 @@ import numpy as np
 from scipy.io import wavfile as wav
 from scipy.fft import fft, ifft, fftfreq
 
+import simpleaudio as sa
 
 from AES.aes import AES_Cipher
 from Blowfish.blowfish import BLOWFISH_Cipher
@@ -27,25 +28,47 @@ class Decrypt(Interpreter):
         self.cipher = None
         self.signal_decrypt= None
         self.fft_decrypt = None
-        self.tamañoSignalOriginal = None
+        self.tamanioSignalOriginal = None
         self.IFFTEncrypt = None
+        self.cipher_IV = None
 
-    def decrypt_wav(self, wav, algoritmo, KEY, MODE, cipher_IV=None) :
+
+    def decrypt_wav(self, wav, algoritmo, key_str, MODE):
         print("\n --------------------- DECRYPT ---------------------- \n")
-        self.signal = self.Read_Wav(wav)
+
+        # Leo txt trambolico
+        r = open(wav + ".txt", 'r')
+        tamanio = int(r.readline())
+        max2norm = float(r.readline())
+        if MODE == "cbc":
+            cipher_IV_str = str(r.readline())
+            print("\n CIPHER IV \n", cipher_IV_str)
+            self.cipher_IV = cipher_IV_str  # CipherIV esta codificado en utf-8
+            print("\n self.cipher_IV en decrypt",self.cipher_IV)
+            #self.cipher_IV = cipher_IV_str.encode(utf-8)  #Encode para pasar de string a bytes
+
+            print("\n CIPHER IV \n", self.cipher_IV)
+        r.close()
+
+        self.tamanioSignalOriginal = tamanio  # Lo voy a usar para crear wav original (IFFTDecrypt)
+        self.Max2Norm = max2norm            # Lo voy a usar para read wav
+
+        KEY = key_str.encode('latin-1')  # Recibo la key en string de GUI y la paso a bytes para el algoritmo
+
+        self.signal = self.Read_Wav(wav + ".wav")
         #Aplicamos transformada de fourier a la señal del wav
         self.FFTDecrypt()
         print("\nDecrypt: FFTa hardcodeada\n",self.data_matrix_FFT)
         data_matriz_FTT = self.data_matrix_FFT
         self.data_byte_enc = self.FFT_ASCII_to_encrypt(data_matriz_FTT)
-        self.fft_decrypt =self.Byte_to_FFT(self.Decrypt_Process(algoritmo, KEY, MODE, self.data_byte_enc, cipher_IV))
+        self.fft_decrypt =self.Byte_to_FFT(self.Decrypt_Process(algoritmo, KEY, MODE, self.data_byte_enc))
         self.signal_decrypt = self.IFFTDecrypt(self.fft_decrypt)
-        self.create_Wav(self.signal_decrypt, "desencriptado.wav")
+        self.create_Wav(self.signal_decrypt, wav + "Desencrypt.wav")
 
     def Read_Wav(self,path):
         sample_rate, samples = wav.read(path)
         #print("\nDecrypt: Samples from encrypted wav\n",samples*self.Max2Norm)
-        print("\nDecrypt: Max de señal encriptada creada\n",self.Max2Norm)
+        #print("\nDecrypt: Max de señal encriptada creada\n",self.Max2Norm)
         self.fs = sample_rate
         #return samples[:,0]
         return samples*self.Max2Norm
@@ -58,22 +81,28 @@ class Decrypt(Interpreter):
         print("\nDecrypt: Sampes 2 decrypted wav\n",samples)
 
 
-    def Decrypt_Process(self,algoritmo, KEY, mode, cipher_data, cipher_IV=None):
+    def Decrypt_Process(self,algoritmo, KEY, mode, cipher_data):
         if algoritmo == "BLOW":
             self.cipher = BLOWFISH_Cipher()
+            if (mode == "ecb"):
+                self.Process = Blowfish.MODE_ECB
+                self.cipher.Decrypt(KEY, Blowfish.MODE_ECB, cipher_data)
+            elif (mode == "cbc"):
+                self.Process = Blowfish.MODE_CBC
+                self.cipher.Decrypt(KEY, Blowfish.MODE_CBC, cipher_data, self.cipher_IV)
+
         elif algoritmo == "AES":
             self.cipher = AES_Cipher()
+            if (mode == "ecb"):
+                self.Process = AES.MODE_ECB
+                self.cipher.Decrypt(KEY, AES.MODE_ECB, cipher_data)
+            elif (mode == "cbc"):
+                self.Process = AES.MODE_CBC
+                self.cipher.Decrypt(KEY, AES.MODE_CBC, cipher_data, self.cipher_IV)
         else:
             print("pone un algoritmo crack")
-
-        if (mode == "ecb"):
-            self.Process = Blowfish.MODE_ECB
-            self.cipher.Decrypt(KEY, Blowfish.MODE_ECB, cipher_data)
-        elif (mode == "cbc"):
-            self.Process = Blowfish.MODE_CBC
-            self.cipher.Decrypt(KEY, Blowfish.MODE_CBC, cipher_data,cipher_IV)
-
         return self.cipher.plain_data
+
 
     def FFT_ASCII_to_encrypt(self, FFTa):
         # Recibe FFTa de Interpreter.FFT
@@ -143,6 +172,7 @@ class Decrypt(Interpreter):
 
         #self.FFT_Array = fft(self.signal)
         print("\nIFFTEncrypt recibida por Decrypt:\n",self.IFFTEncrypt)
+
         self.FFT_Array = fft(self.IFFTEncrypt)
         print("\nDecrypt: Wav after FFT\n", self.FFT_Array)
 
@@ -168,7 +198,7 @@ class Decrypt(Interpreter):
         for fil in range(len(FFT_Array)):
             array_imag[fil] = complex(FFT_Array[fil][0], FFT_Array[fil][1])
 
-        n = self.tamañoSignalOriginal - len(array_imag)*2
+        n = self.tamanioSignalOriginal - len(array_imag) * 2
         ceros = np.zeros(n)
 
         conjugado = np.conj(array_imag)
@@ -181,16 +211,57 @@ class Decrypt(Interpreter):
         return self.IFFT_Array
         # Last we save results from IFFT to a .wav file
 
+    ######## GUI ###########
+
+    def play_signal_O(self, signal):
+        signal *= 32767 / np.max(np.abs(signal))
+        signal = signal.astype(np.int16)
+        self.play_O = sa.play_buffer(signal, 1, 2, int(self.fs))
+        # self.play.wait_done()
+
+    def play_O(self):
+        if self.signal_decrypt is not None:
+            self.play_signal_O(self.signal_decrypt)
+
+    def pause_reproduction_O(self):
+        # if self.play.isplaying() and self.play is not None:
+        if self.play_O is not None:
+            self.play_O.stop()
+        else:
+            return -1
+
+    def resume_song_O(self, time):
+        if self.signal_decrypt is not None:
+            self.play_signal_O(self.signal_decrypt[int(time * self.fs):])
+
+    ###### Play signal encrypted
+
+    def play_signal_E(self, signal):
+        signal *= 32767 / np.max(np.abs(signal))
+        signal = signal.astype(np.int16)
+        self.play_E = sa.play_buffer(signal, 1, 2, int(self.fs))
+        # self.play.wait_done()
+
+    def play_E(self):
+        if self.signal is not None:
+            self.play_signal_O(self.signal)
+
+    def pause_reproduction_E(self):
+        # if self.play.isplaying() and self.play is not None:
+        if self.play_E is not None:
+            self.play_E.stop()
+        else:
+            return -1
+
+    def resume_song_E(self, time):
+        if self.signal is not None:
+            self.play_signal_E(self.signal[int(time * self.fs):])
+
 
     # SETTERS
-    def set_Max2Norm(self,max2norm):
-        self.Max2Norm = max2norm
-
     def set_FFTa(self, FFTa):
         self.data_matrix_FFT = FFTa
 
-    def set_TamañoSignalOriginal(self,tamaño):
-        self.tamañoSignalOriginal = tamaño
 
     def set_IFFTEncrypt(self,ifftenc):
         self.IFFTEncrypt = ifftenc
