@@ -48,14 +48,21 @@ class Decrypt(Interpreter):
         print("\nImprimo lo que guarde en el wav nuevo\n",samples)
 
 
-    def Decrypt_Process(self,process_type, KEY, MODE, cipher_data, cipher_IV=None):
-        if process_type == "BLOW":
+    def Decrypt_Process(self,algoritmo, KEY, mode, cipher_data, cipher_IV=None):
+        if algoritmo == "BLOW":
             self.cipher = BLOWFISH_Cipher()
-        elif process_type == "AES":
+        elif algoritmo == "AES":
             self.cipher = AES_Cipher()
         else:
             print("pone un algoritmo crack")
-        self.cipher.Decrypt(KEY, MODE, cipher_data, cipher_IV)
+
+        if (mode == "ecb"):
+            self.Process = Blowfish.MODE_ECB
+            self.cipher.Decrypt(KEY, Blowfish.MODE_ECB, cipher_data)
+        elif (mode == "cbc"):
+            self.Process = Blowfish.MODE_CCB
+            self.cipher.Decrypt(KEY, Blowfish.MODE_CCB, cipher_data)
+
         return self.cipher.plain_data
 
     def FFT_ASCII_to_encrypt(self, FFTa):
