@@ -50,7 +50,10 @@ class Interpreter:
 
     def create_Wav(self, signal, name_wav ):
         print("\nsignal que llega a Create Wav\n",signal)
-        wav.write( name_wav, self.fs, signal.astype(np.int16))
+        wav.write( name_wav, self.fs, signal.astype(np.int16)/5)
+        sample_rate, samples = wav.read(name_wav)
+        print("\nImprimo lo que guarde en el wav nuevo\n",samples)
+
 
     def FFT(self):         # No recibe nada y devuelve la fft en formato matriz cuya columna 0
                                    # es la parte real y la col 1 es la parte imaginaria
