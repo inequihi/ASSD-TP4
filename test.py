@@ -43,12 +43,12 @@ def test_aes(data):
 def test_encrypt_signal():
        path = "Raw_Wavs/Flauta-LA.wav"
        Encriptacion = Encrypt()
-       Encriptacion.encrypt_wav(path, "BLOW","cbc")
+       Encriptacion.encrypt_wav(path, "BLOW","ecb")
        key = Encriptacion.get_key()
        print(key)
 
        Decriptacion = Decrypt()
-       Decriptacion.decrypt_wav("encriptado.wav","BLOW",key,"cbc")
+       Decriptacion.decrypt_wav("encriptado.wav","BLOW",key,"ecb")
 
 
 

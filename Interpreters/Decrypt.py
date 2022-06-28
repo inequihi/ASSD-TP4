@@ -60,8 +60,8 @@ class Decrypt(Interpreter):
             self.Process = Blowfish.MODE_ECB
             self.cipher.Decrypt(KEY, Blowfish.MODE_ECB, cipher_data)
         elif (mode == "cbc"):
-            self.Process = Blowfish.MODE_CCB
-            self.cipher.Decrypt(KEY, Blowfish.MODE_CCB, cipher_data)
+            self.Process = Blowfish.MODE_CBC
+            self.cipher.Decrypt(KEY, Blowfish.MODE_CBC, cipher_data)
 
         return self.cipher.plain_data
 
