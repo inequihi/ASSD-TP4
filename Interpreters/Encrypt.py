@@ -1,6 +1,6 @@
 from Interpreters.Interpreter import Interpreter
 import numpy as np
-
+from scipy.io import wavfile as wav
 
 from AES.aes import AES_Cipher
 from Blowfish.blowfish import BLOWFISH_Cipher
@@ -23,10 +23,33 @@ class Encrypt(Interpreter):
         self.data_byte_enc = None  # b'%5yu/223?'
         self.data_matrix_FFT = None  # [ [1,2] [3,4] ]
         self.cipher = None
+        self.Process = None
         self.FTT = None
         self.FFTe = None
 
-    def Encrypt_Process(self, algoritmo):
+    def encrypt_wav(self, wav, process_type, mode):
+        self.signal = self.Read_Wav(wav)   #Si bien la funcion devuelve un samples, esa informacion ya esta guardada en self.fs
+        print("\nencrypt wav señal original\n",self.signal)
+        FFT = self.FFT()
+
+        FFTb = self.FFT_to_byte(FFT)
+
+        self.Encrypt_Process(process_type,mode)
+
+        self.cipher.Encrypt(self.Process, FFTb)
+
+        if(self.cipher.status == 1):
+            print("La encriptacion fue correcta")
+            FFTe = self.cipher.cipher_data
+            FFTa = self.Encrypt_to_FFT_ASCII(FFTe)
+            self.key = self.cipher.get_key()
+            wav_answer = self.IFFT(FFTa)
+            self.create_Wav(wav_answer, "encriptado.wav")
+
+        elif(self.cipher.status == 0):
+            print("La encriptacion no fue correcta")
+
+    def Encrypt_Process(self, algoritmo,mode):
         if algoritmo == "BLOW":
             self.cipher = BLOWFISH_Cipher()
 
@@ -34,6 +57,11 @@ class Encrypt(Interpreter):
             self.cipher = AES_Cipher()
         else:
             print("pone un algoritmo crack")
+
+        if (mode == "ecb"):
+            self.Process = Blowfish.MODE_ECB
+        elif (mode == "cbc"):
+            self.Process = Blowfish.MODE_CBC
 
 
     def FFT_to_byte(self, matrix):
@@ -83,29 +111,20 @@ class Encrypt(Interpreter):
         print("\nFFTa\n",FFTa)
         return FFTa
 
-    def encrypt_wav(self, wav, process_type, mode):
-        self.signal = self.Read_Wav(wav)   #Si bien la funcion devuelve un samples, esa informacion ya esta guardada en self.fs
-        print("\nencrypt wav señal original\n",self.signal)
-        FFT = self.FFT()
 
-        FFTb = self.FFT_to_byte(FFT)
+    def create_Wav(self, signal, name_wav ):
+        print("\nSamples que llegan a Create Wav en encrypt\n",signal)
+        # Como divido por 5 las muestras de la señal, tengo que multiplicar por cinco en el proceso decrpt
+        wav.write( name_wav, self.fs, signal.astype(np.int16)/5)
+        sample_rate, samples = wav.read(name_wav)
+        print("\nSamples/5 que llegan a Create Wav en encrypt\n",samples)
 
-        self.Encrypt_Process(process_type)
-        if(mode == "ecb"):
-            MODE = Blowfish.MODE_ECB
-        elif(mode == "cbc"):
-            MODE = Blowfish.MODE_CBC
+    def Read_Wav(self,path):
+        sample_rate, samples = wav.read(path)
+        self.fs = sample_rate
+        #return samples[:,0]
+        return samples
 
-        self.cipher.Encrypt(MODE, FFTb)
-
-        if(self.cipher.status == 1):
-            print("La encriptacion fue correcta")
-            FFTe = self.cipher.cipher_data
-            FFTa = self.Encrypt_to_FFT_ASCII(FFTe)
-            self.key = self.cipher.get_key()
-            wav_answer = self.IFFT(FFTa)
-            self.create_Wav(wav_answer, "encriptado.wav")
-
-        elif(self.cipher.status == 0):
-            print("La encriptacion no fue correcta")
-
+    # GETTERS
+    def get_key(self):
+        return self.cipher.get_key()

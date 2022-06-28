@@ -1,6 +1,6 @@
-import Interpreter
+from Interpreters.Interpreter import Interpreter
 import numpy as np
-import struct
+from scipy.io import wavfile as wav
 
 from AES.aes import AES_Cipher
 from Blowfish.blowfish import BLOWFISH_Cipher
@@ -24,7 +24,8 @@ class Decrypt(Interpreter):
         self.signal_decrypt= None
         self.fft_decrypt = None
 
-    def decrypt_wav(self, wav, algoritmo, KEY, MODE, cipher_IV) :
+    def decrypt_wav(self, wav, algoritmo, KEY, MODE, cipher_IV=None) :
+        # Como dividi por 5 en encrypt, para llegar a los ascii correctos debo multiplicar por 5
         self.signal = self.Read_Wav(wav)
         self.data_matriz_FTT = self.FFT()
         self.data_byte_enc = self.FFT_ASCII_to_encrypt(self.data_matriz_FTT)
@@ -32,7 +33,22 @@ class Decrypt(Interpreter):
         self.signal_decrypt = self.IFFT( self.fft_decrypt)
         self.create_Wav(self.signal_decrypt, wav)
 
-    def Decrypt_Process(self,wav, process_type, mode, algoritmo, KEY, MODE, cipher_data, cipher_IV=None):
+    def Read_Wav(self,path):
+        sample_rate, samples = wav.read(path)
+        print("\nSamples recibidas por decrypt:\n",samples)
+        print("\nSamples*5 recibidas por decrypt:\n",samples*5)
+        self.fs = sample_rate
+        #return samples[:,0]
+        return samples
+
+    def create_Wav(self, signal, name_wav ):
+        print("\nsignal que llega a Create Wav\n",signal)
+        wav.write( name_wav, self.fs, signal.astype(np.int16))
+        sample_rate, samples = wav.read(name_wav)
+        print("\nImprimo lo que guarde en el wav nuevo\n",samples)
+
+
+    def Decrypt_Process(self,process_type, KEY, MODE, cipher_data, cipher_IV=None):
         if process_type == "BLOW":
             self.cipher = BLOWFISH_Cipher()
         elif process_type == "AES":
@@ -96,19 +112,3 @@ class Decrypt(Interpreter):
                 if (signoTemp == '-'):
                     FFT[i][j] = FFT[i][j] * -1
         return FFT
-
-    def rawbytes(s):
-        """Convert a string to raw bytes without encoding"""
-        # https://stackoverflow.com/questions/42795042/how-to-cast-a-string-to-bytes-without-encoding
-        outlist = []
-        for cp in s:
-            num = ord(cp)
-            if num < 255:
-                outlist.append(struct.pack('B', num))
-            elif num < 65535:
-                outlist.append(struct.pack('>H', num))
-            else:
-                b = (num & 0xFF0000) >> 16
-                H = num & 0xFFFF
-                outlist.append(struct.pack('>bH', b, H))
-        return b''.join(outlist)

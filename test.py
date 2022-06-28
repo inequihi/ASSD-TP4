@@ -4,7 +4,8 @@ from Blowfish.blowfish import BLOWFISH_Cipher
 from Crypto.Cipher import AES
 from Crypto.Cipher import Blowfish
 
-from Interpreters.Encript import Encrypt
+from Interpreters.Encrypt import Encrypt
+from Interpreters.Decrypt import Decrypt
 
 def test_blowfish(data):
        print("\n ----- BLOWFISH ----- \n")
@@ -40,9 +41,15 @@ def test_aes(data):
        print("Data desencriptada: \n",plain_data)
 
 def test_encrypt_signal():
-       path = "Flauta-LA.wav"
+       path = "Raw_Wavs/Flauta-LA.wav"
        Encriptacion = Encrypt()
        Encriptacion.encrypt_wav(path, "BLOW","cbc")
+       key = Encriptacion.get_key()
+       print(key)
+
+       Decriptacion = Decrypt()
+       Decriptacion.decrypt_wav("encriptado.wav","BLOW",key,"cbc")
+
 
 
 
@@ -80,6 +87,7 @@ def main():
        #test_aes(data)
        #test_blowfish(data)
        test_encrypt_signal()
+
 
 
 

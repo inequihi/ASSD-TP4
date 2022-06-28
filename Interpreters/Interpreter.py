@@ -42,18 +42,21 @@ class Interpreter:
         self.signal = None
         self.time = None
         self.fs = None
-    def Read_Wav(self,path):
-        sample_rate, samples = wav.read(path)
-        self.fs = sample_rate
-        #return samples[:,0]
-        return samples
 
-    def create_Wav(self, signal, name_wav ):
-        print("\nsignal que llega a Create Wav\n",signal)
-        wav.write( name_wav, self.fs, signal.astype(np.int16)/5)
-        sample_rate, samples = wav.read(name_wav)
-        print("\nImprimo lo que guarde en el wav nuevo\n",samples)
+    # ESTAS FUNCIONES ESTARAN EN ENCRYPT Y DECRYPT PQ DEPENDE DE SI
+    # ENCIPTAMOS O DECIFRAMOS MULTIPLICAMOS O DIVIDIOMS LOS SAMPLES POR 5 AL LEER WAV O CREAR WAV
+    # def Read_Wav(self,path):
+    #     sample_rate, samples = wav.read(path)
+    #     self.fs = sample_rate
+    #     #return samples[:,0]
+    #     return samples
 
+    # def create_Wav(self, signal, name_wav ):
+    #     print("\nsignal que llega a Create Wav\n",signal)
+    #     wav.write( name_wav, self.fs, signal.astype(np.int16))
+    #     sample_rate, samples = wav.read(name_wav)
+    #     print("\nImprimo lo que guarde en el wav nuevo\n",samples)
+    #
 
     def FFT(self):         # No recibe nada y devuelve la fft en formato matriz cuya columna 0
                                    # es la parte real y la col 1 es la parte imaginaria
