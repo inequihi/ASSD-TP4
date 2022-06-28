@@ -1,7 +1,9 @@
 from scipy.fft import fft, ifft, fftfreq
 from scipy.io import wavfile as wav
 import numpy as np
+import matplotlib.pyplot as plt
 from utils.percentage_for import percentage_for
+
 
 #############################################
 #               INTERPRETER                 #
@@ -37,11 +39,13 @@ class Interpreter:
     def __init__(self):
         self.time_samples = None
         self.FFT_Array = None
+        self.FFT_Freq = None
         self.FFT_ASCII = None
         self.IFFT_Array = None
         self.signal = None
         self.time = None
         self.fs = None
+        self.Max2Norm = None
 
     # ESTAS FUNCIONES ESTARAN EN ENCRYPT Y DECRYPT PQ DEPENDE DE SI
     # ENCIPTAMOS O DECIFRAMOS MULTIPLICAMOS O DIVIDIOMS LOS SAMPLES POR 5 AL LEER WAV O CREAR WAV
@@ -62,9 +66,14 @@ class Interpreter:
                                    # es la parte real y la col 1 es la parte imaginaria
                                    # First we read .wav file and apply Fast Fourier Transform
         self.FFT_Array = fft(self.signal)
-        freq = fftfreq(len(self.signal), 1/self.fs)
-        for i in range(len(freq)):
-            if (freq[i] > 200):
+        print("\nWav after FFT\n", self.FFT_Array)
+
+        # Posible error: fftfreq(N, 1/SAMPLE RATE)
+
+        self.FFT_Freq = fftfreq(len(self.signal), 1/self.fs)
+
+        for i in range(len(self.FFT_Freq)):
+            if (self.FFT_Freq[i] > 2000):
                 w = i
                 break
         self.FFT_Array = self.FFT_Array[:w]
@@ -77,7 +86,10 @@ class Interpreter:
                 if col == 1:
                     matrix[fil][col] = self.FFT_Array[fil].imag
             percentage_for(fil, len(self.FFT_Array))
+
+        print("\nEncrypt: FFT limitada en freq\n", self.FFT_Array)
         return matrix
+
 
 
 
@@ -92,14 +104,22 @@ class Interpreter:
         for fil in range(len(FFT_Array)):
             array_imag[fil] = complex(FFT_Array[fil][0], FFT_Array[fil][1])
 
-        print("\nFFTa interpretado como complejo\n",array_imag)
+        #PLOTEO FFT
+        #plt.plot(self.FFT_Freq, np.abs(self.FFT_Array))
+        #plt.shot()
+
         conjugado = np.conj(array_imag)
         conj = np.flip(conjugado)
         array_imag = np.append(array_imag, conj)
-        print(array_imag)
+
         self.IFFT_Array = ifft(array_imag).real
-        print("\nIFFTencrypted result\n", self.IFFT_Array)
         return self.IFFT_Array
         # Last we save results from IFFT to a .wav file
 
 
+
+    def get_max2norm(self):
+        return self.Max2Norm
+
+    def get_FFTfreq(self):
+        return self.FFT_Freq

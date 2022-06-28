@@ -44,10 +44,16 @@ def test_encrypt_signal():
        path = "Raw_Wavs/Flauta-LA.wav"
        Encriptacion = Encrypt()
        Encriptacion.encrypt_wav(path, "BLOW","ecb")
+       tamaño = len(Encriptacion.get_FFTfreq())
        key = Encriptacion.get_key()
-       print(key)
+       #print("\n KEY \n",key)
 
        Decriptacion = Decrypt()
+
+       Decriptacion.set_Max2Norm(Encriptacion.get_max2norm())
+       Decriptacion.set_FFTa(Encriptacion.get_FFTa())
+       Decriptacion.set_TamañoSignalOriginal(tamaño)
+
        Decriptacion.decrypt_wav("encriptado.wav","BLOW",key,"ecb")
 
 

@@ -1,6 +1,8 @@
 from Interpreters.Interpreter import Interpreter
 import numpy as np
 from scipy.io import wavfile as wav
+from scipy.fft import fft, ifft, fftfreq
+
 
 from AES.aes import AES_Cipher
 from Blowfish.blowfish import BLOWFISH_Cipher
@@ -41,9 +43,10 @@ class Encrypt(Interpreter):
         if(self.cipher.status == 1):
             print("La encriptacion fue correcta")
             FFTe = self.cipher.cipher_data
+            print("\nEcrypt: FFTe\n", FFTe[:20])
             FFTa = self.Encrypt_to_FFT_ASCII(FFTe)
             self.key = self.cipher.get_key()
-            wav_answer = self.IFFT(FFTa)
+            wav_answer = self.IFFTEncrypt(FFTa)
             self.create_Wav(wav_answer, "encriptado.wav")
 
         elif(self.cipher.status == 0):
@@ -80,7 +83,7 @@ class Encrypt(Interpreter):
             percentage_for(fil, len(self.data_matrix_FFT))
 
         FFTb = bytes(string, 'ascii')
-        print("\nFFTb\n",FFTb)
+        print("\nEncrypt: FFTb\n",FFTb)
         return FFTb
 
     def Encrypt_to_FFT_ASCII(self, FFTe):  # Recibe transformada de Fourier encriptada
@@ -108,16 +111,17 @@ class Encrypt(Interpreter):
             else:
                 self.data_matrix_FFT = np.append(self.data_matrix_FFT, pre_answer, axis=0)
         FFTa = self.data_matrix_FFT
-        print("\nFFTa\n",FFTa)
+        print("\nEncrypt: FFTa\n",FFTa)
         return FFTa
 
 
     def create_Wav(self, signal, name_wav ):
         print("\nSamples que llegan a Create Wav en encrypt\n",signal)
-        # Como divido por 5 las muestras de la señal, tengo que multiplicar por cinco en el proceso decrpt
-        wav.write( name_wav, self.fs, signal.astype(np.int16)/5)
+        self.Max2Norm = signal.max()
+        signalNorm = signal.astype(np.float32)/self.Max2Norm
+        wav.write( name_wav, self.fs, signalNorm)
         sample_rate, samples = wav.read(name_wav)
-        print("\nSamples/5 que llegan a Create Wav en encrypt\n",samples)
+        print("\nEncrypt: Wav creado por encrypt\n",samples)
 
     def Read_Wav(self,path):
         sample_rate, samples = wav.read(path)
@@ -125,6 +129,30 @@ class Encrypt(Interpreter):
         #return samples[:,0]
         return samples
 
+
+    def IFFTEncrypt(self,FFT_Array):
+        #Recbie FFTa de encrypt_to_FFT_ASCII --> SON ARRAYS
+
+        # First we decode bytes to array of complex numbers to apply IFFT
+        array_imag = np.zeros(len(FFT_Array), complex)
+        print(len(FFT_Array))
+        for fil in range(len(FFT_Array)):
+            array_imag[fil] = complex(FFT_Array[fil][0], FFT_Array[fil][1])
+
+        #PLOTEO FFT
+        #plt.plot(self.FFT_Freq, np.abs(self.FFT_Array))
+        #plt.shot()
+
+        self.IFFT_Array = ifft(array_imag).real
+        print("\nEncrypt: Samples 2 encrypted wav\n",self.IFFT_Array)
+        return self.IFFT_Array
+        # Last we save results from IFFT to a .wav file
+
     # GETTERS
     def get_key(self):
         return self.cipher.get_key()
+
+    def get_FFTa(self):
+        return self.data_matrix_FFT
+
+
