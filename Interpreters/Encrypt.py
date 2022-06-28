@@ -32,7 +32,7 @@ class Encrypt(Interpreter):
     def encrypt_wav(self, wav, process_type, mode):
         self.signal = self.Read_Wav(wav)   #Si bien la funcion devuelve un samples, esa informacion ya esta guardada en self.fs
         print("\nencrypt wav señal original\n",self.signal)
-        FFT = self.FFT()
+        FFT = self.FFTEncrypt()
 
         FFTb = self.FFT_to_byte(FFT)
 
@@ -83,12 +83,12 @@ class Encrypt(Interpreter):
             percentage_for(fil, len(self.data_matrix_FFT))
 
         FFTb = bytes(string, 'ascii')
-        print("\nEncrypt: FFTb\n",FFTb)
+        print("\nEncrypt: FFTb\n",FFTb[:20])
         return FFTb
+
 
     def Encrypt_to_FFT_ASCII(self, FFTe):  # Recibe transformada de Fourier encriptada
                                            # Devuelve array de FFT interpretando valores ASCII
-
         self.data_byte_enc = FFTe
         str_data = self.data_byte_enc.decode("latin-1")
 
@@ -115,38 +115,70 @@ class Encrypt(Interpreter):
         return FFTa
 
 
-    def create_Wav(self, signal, name_wav ):
-        print("\nSamples que llegan a Create Wav en encrypt\n",signal)
-        self.Max2Norm = signal.max()
-        signalNorm = signal.astype(np.float32)/self.Max2Norm
-        wav.write( name_wav, self.fs, signalNorm)
-        sample_rate, samples = wav.read(name_wav)
-        print("\nEncrypt: Wav creado por encrypt\n",samples)
-
     def Read_Wav(self,path):
         sample_rate, samples = wav.read(path)
         self.fs = sample_rate
         #return samples[:,0]
         return samples
 
+    def create_Wav(self, signal, name_wav ):
+        print("\nSamples que llegan a Create Wav en encrypt\n",signal)
+        self.Max2Norm = signal.max()
+        print("\nEncrypt: Max de señal encriptada creada\n",self.Max2Norm)
+        signalNorm = signal.astype(np.float32)/self.Max2Norm
+        wav.write( name_wav, self.fs, signalNorm.real)
+        #print("\nEncrypt: Wav creado por encrypt\n",samples)
 
-    def IFFTEncrypt(self,FFT_Array):
+
+    def IFFTEncrypt(self,FFTa):
         #Recbie FFTa de encrypt_to_FFT_ASCII --> SON ARRAYS
-
         # First we decode bytes to array of complex numbers to apply IFFT
-        array_imag = np.zeros(len(FFT_Array), complex)
-        print(len(FFT_Array))
-        for fil in range(len(FFT_Array)):
-            array_imag[fil] = complex(FFT_Array[fil][0], FFT_Array[fil][1])
+        array_imag = np.zeros(len(FFTa), complex)
+        for fil in range(len(FFTa)):
+            array_imag[fil] = complex(FFTa[fil][0], FFTa[fil][1])
 
-        #PLOTEO FFT
-        #plt.plot(self.FFT_Freq, np.abs(self.FFT_Array))
-        #plt.shot()
+        # Hacemos a la FFT simetrica
+        conjugado = np.conj(array_imag)
+        conj = np.flip(conjugado)
+        array_imag = np.append(array_imag, conj)
+        print("\n Array Image\n", array_imag)
 
-        self.IFFT_Array = ifft(array_imag).real
+        self.IFFT_Array = ifft(array_imag)
         print("\nEncrypt: Samples 2 encrypted wav\n",self.IFFT_Array)
+        # FFTDECRYPT(IFFT ENCRYPT (FFTa)) = FFTa
+
         return self.IFFT_Array
         # Last we save results from IFFT to a .wav file
+
+
+    def FFTEncrypt(self):         # No recibe nada y devuelve la fft en formato matriz cuya columna 0
+                                   # es la parte real y la col 1 es la parte imaginaria
+                                   # First we read .wav file and apply Fast Fourier Transform
+        self.FFT_Array = fft(self.signal)
+        print("\nEncrypt: Wav after FFT\n", self.FFT_Array)
+
+        # Posible error: fftfreq(N, 1/SAMPLE RATE)
+
+        self.FFT_Freq = fftfreq(len(self.signal), 1/self.fs)
+
+        for i in range(len(self.FFT_Freq)):
+            if (self.FFT_Freq[i] > 2000):
+                w = i
+                break
+        self.FFT_Array = self.FFT_Array[:w]
+        # Last we encode FFT array of complex numbers to bytes to use the encryption algorithms
+        matrix = np.zeros((len(self.FFT_Array), 2))
+        for fil in range(len(self.FFT_Array)):
+            for col in range(len(matrix[0])):
+                if col == 0:
+                    matrix[fil][col] = self.FFT_Array[fil].real
+                if col == 1:
+                    matrix[fil][col] = self.FFT_Array[fil].imag
+            percentage_for(fil, len(self.FFT_Array))
+
+        print("\nEncrypt: FFT limitada en freq\n", self.FFT_Array)
+        return matrix
+
 
     # GETTERS
     def get_key(self):
@@ -154,5 +186,8 @@ class Encrypt(Interpreter):
 
     def get_FFTa(self):
         return self.data_matrix_FFT
+
+    def get_IFFTArray(self):
+        return self.IFFT_Array
 
 

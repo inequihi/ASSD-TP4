@@ -91,10 +91,6 @@ class Interpreter:
         return matrix
 
 
-
-
-
-
     def IFFT(self,FFT_Array):
         #Recbie FFTa de encrypt_to_FFT_ASCII o FFT de byte_toFFT  --> SON ARRAYS
 
