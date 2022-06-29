@@ -58,6 +58,8 @@ class MenuWindow (QWidget, Ui_Menu):
         self.label_incorrect_D_2.hide()
         self.label_incorrect_E.hide()
         self.label_copied.hide()
+        self.label.hide()
+        self.label_2.hide()
 
         #RADIO BUTTON
         self.radioButton_AES.clicked.connect(self.put_green_red_encrypt)
@@ -141,6 +143,7 @@ class MenuWindow (QWidget, Ui_Menu):
                 self.mode_E = "ecb"
             else:
                 self.mode_E = "cbc"
+            self.label.show()
             self.encryptor.encrypt_wav(self.original_path_name, self.algorithm_E, self.mode_E, self.label_new_file_encrypt.text())
             self.label_incorrect_E.hide()
             self.label_key_tittle.show()
@@ -155,6 +158,7 @@ class MenuWindow (QWidget, Ui_Menu):
             self.MplWidget.canvas.draw()
             graph_fft(self.MplWidget_2.canvas.ax, self.encryptor.get_e_fft_data())
             self.MplWidget_2.canvas.draw()
+            self.label.hide()
 
 
     def desencrypt_message(self):
@@ -179,6 +183,7 @@ class MenuWindow (QWidget, Ui_Menu):
                 self.mode_D = "ecb"
             else:
                 self.mode_D = "cbc"
+            self.label_2.show()
             self.decryptor.decrypt_wav(self.encrypt_path_name, self.algorithm_D, self.lineEdit_key.text(), self.mode_D)
             self.counter3 = Counter_E2(self, self.decryptor.get_encrypted_duration())
             self.counter4 = Counter_D(self, self.decryptor.get_original_duration())
@@ -188,6 +193,7 @@ class MenuWindow (QWidget, Ui_Menu):
             self.MplWidget_5.canvas.draw()
             graph_fft(self.MplWidget_6.canvas.ax, self.decryptor.get_o_fft_data())
             self.MplWidget_6.canvas.draw()
+            self.label_2.hide()
 
 
 #############################################################################################

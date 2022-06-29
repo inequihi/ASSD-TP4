@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="reloj">
+    <file>reloj.jpg</file>
+  </qresource>
+</RCC>
