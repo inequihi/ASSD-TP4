@@ -7,8 +7,9 @@ import Frontend.src.ui.play
 import Frontend.src.ui.pause
 import Frontend.src.ui.stop
 import Frontend.src.ui.copy
-#import Interpreters.Encript
-#import Interpreters.Decrypt
+from Interpreters.Encrypt import Encrypt
+from Interpreters.Decrypt import Decrypt
+from utils.graph_FFT import graph_fft
 
 
 class MenuWindow (QWidget, Ui_Menu):
@@ -45,18 +46,16 @@ class MenuWindow (QWidget, Ui_Menu):
         self.play_D = True
         self.pause_D = True
 
-        self.counter1 = Counter_O(self, 4)      #FALTA DURACION DE LA CANCICON
-        self.counter2 = Counter_E(self, 4)
-        self.counter3 = Counter_E2(self, 4)
-        self.counter4 = Counter_D(self, 4)
-
-
+        #BACK
+        self.encryptor = Encrypt()
+        self.decryptor = Decrypt()
 
         #HIDES
         self.label_key_tittle.hide()
         self.label_KEY.hide()
         self.pushButton_copy.hide()
         self.label_incorrect_D.hide()
+        self.label_incorrect_D_2.hide()
         self.label_incorrect_E.hide()
         self.label_copied.hide()
 
@@ -101,19 +100,15 @@ class MenuWindow (QWidget, Ui_Menu):
         self.pushButton_pausa_D.clicked.connect(self.pause_song_D)
         self.pushButton_rec_D.clicked.connect(self.reset_song_D)
 
-
-
     #FUNCTIONS
 
 
     #FUNCTIONS GET FILE UPLOAD
     def get_message_file(self):
         print("upload")
-        filename = QFileDialog.getOpenFileNames()
-        self.original_path = filename[0][0]
+        self.filename_O = QFileDialog.getOpenFileNames()
+        self.original_path = self.filename_O[0][0]
         self.original_path_name = Path(self.original_path)
-
-        #self.horizontalSlider_Original.setMaximum(int(self.back.song.duration))
 
 
     def get_encrypt_file(self):
@@ -124,8 +119,8 @@ class MenuWindow (QWidget, Ui_Menu):
         self.label_incorrect_D.hide()
         self.label_incorrect_E.hide()
         self.label_copied.hide()
-        filename = QFileDialog.getOpenFileNames()
-        self.encrypt_path = filename[0][0]
+        self.filename_E = QFileDialog.getOpenFileNames()
+        self.encrypt_path = self.filename_E[0][0]
         self.encrypt_path_name = Path(self.encrypt_path)
 
 
@@ -135,7 +130,10 @@ class MenuWindow (QWidget, Ui_Menu):
     def encrypt_message(self):
         print("Encrypt")
         if (self.radioButton_AES.isChecked()) == 0 and (self.radioButton_Blowfish.isChecked()) == 0:
-            self.label_incorrect_E.setText("Incorrect: Algorithm was no chosen. Please choose one to continue.")
+            self.label_incorrect_E.setText("FAIL: Algorithm was no chosen. Please choose one to continue.")
+            self.label_incorrect_E.show()
+        if len(self.label_new_file_encrypt.text() == 0):
+            self.label_incorrect_E.setText("FAIL: Please fill all the information.")
             self.label_incorrect_E.show()
         else:
             if self.radioButton_AES.isChecked() == 1:
@@ -146,22 +144,36 @@ class MenuWindow (QWidget, Ui_Menu):
                 self.mode_E = "ecb"
             else:
                 self.mode_E = "cbc"
-            #self.encryptor = Encrypt()
-            #self.encryptor.encrypt_wav(self.original_path_name, self.algorithm_E, self.mode_E)
+            self.encryptor.encrypt_wav(self.original_path_name, self.algorithm_E, self.mode_E, self.label_new_file_encrypt.text())
             self.label_incorrect_E.hide()
             self.label_key_tittle.show()
             self.pushButton_copy.show()
-
+            self.label_KEY.setText(self.encryptor.get_key().decode('latin-1'))
             self.label_KEY.show()
+            self.counter1 = Counter_O(self, self.encryptor.get_original_duration())
+            self.counter2 = Counter_E(self, self.encryptor.get_encrypted_duration())
+            self.horizontalSlider_Original.setMaximum(int(self.encryptor.get_original_duration()))
+            self.horizontalSlider_Encrypt.setMaximum(int(self.encryptor.get_encrypted_duration()))
+            graph_fft(self.MplWidget.canvas.ax, self.encryptor.get_o_fft_data())
+            self.MplWidget.canvas.draw()
+            graph_fft(self.MplWidget_2.canvas.ax, self.encryptor.get_e_fft_data())
+            self.MplWidget_2.canvas.draw()
 
 
     def desencrypt_message(self):
         print("Desencrypt")
         if len(self.lineEdit_key.text()) == 0:
-            self.label_incorrect_D.setText("Incorrect: The key is empty. Please fill the line.")
+            self.label_incorrect_D.setText("FAIL: The key is empty. Please fill the line.")
             self.label_incorrect_D.show()
+        elif self.radioButton_AES_2.isChecked() == 0 and self.radioButton_Blowfish_2.isChecked() == 0:
+            self.label_incorrect_D_2.setText("FAIL: Fill the buttons.")
+            self.label_incorrect_D_2.show()
+        elif self.radioButton_ECB_2.isChecked() == 0 and self.radioButton_CBC_2.isChecked() == 0:
+            self.label_incorrect_D_2.setText("FAIL: Fill the buttons.")
+            self.label_incorrect_D_2.show()
         else:
             self.label_incorrect_D.hide()
+            self.label_incorrect_D_2.hide()
             if self.radioButton_AES_2.isChecked() == 1:
                 self.algorithm_D = "AES"
             else:
@@ -170,7 +182,15 @@ class MenuWindow (QWidget, Ui_Menu):
                 self.mode_D = "ecb"
             else:
                 self.mode_D = "cbc"
-            #self.decryptor = decrypt_wav(self.encrypt_path_name, self.algorithm_D, self.lineEdit_key.text(), self.mode_D, cipher_IV)
+            self.decryptor.decrypt_wav(self.encrypt_path_name, self.algorithm_D, self.lineEdit_key.text(), self.mode_D)
+            self.counter3 = Counter_E2(self, self.decryptor.get_encrypted_duration())
+            self.counter4 = Counter_D(self, self.decryptor.get_original_duration())
+            self.horizontalSlider_Encrypt2.setMaximum(int(self.decryptor.get_encrypted_duration()))
+            self.horizontalSlider_Desencrypt.setMaximum(int(self.decryptor.get_original_duration()))
+            graph_fft(self.MplWidget_5.canvas.ax, self.encryptor.get_e_fft_data())
+            self.MplWidget_5.canvas.draw()
+            graph_fft(self.MplWidget_6.canvas.ax, self.encryptor.get_o_fft_data())
+            self.MplWidget_6.canvas.draw()
 
 
 #############################################################################################
@@ -191,6 +211,9 @@ class MenuWindow (QWidget, Ui_Menu):
             self.Button_Encrypt.setStyleSheet("background: red;\n"
                                                  "color: white;")
         elif self.radioButton_ECB.isChecked() == 0 and self.radioButton_CBC.isChecked() == 0:
+            self.Button_Encrypt.setStyleSheet("background: red;\n"
+                                              "color: white;")
+        elif len(self.label_new_file_encrypt) == 0:
             self.Button_Encrypt.setStyleSheet("background: red;\n"
                                               "color: white;")
         else:
@@ -224,12 +247,12 @@ class MenuWindow (QWidget, Ui_Menu):
             self.first_time_O = 1
         if self.pausa_O == False:
             self.counter1.pause_loop = False
-            #self.encryptor.play_O()
+            self.encryptor.play_O()
         else:
             if(self.play_O):
                 self.pause_O = True
                 self.counter1.pause_loop = False
-                #self.encryptor.resume_song_O(self.counter1.play_seconds)
+                self.encryptor.resume_song_O(self.counter1.play_seconds)
                 self.play_O = False
 
     def pause_song_O(self):
@@ -239,7 +262,7 @@ class MenuWindow (QWidget, Ui_Menu):
             self.play_O = True
             self.pause_O = False
             self.counter1.pause_loop = True
-            #self.encryptor.pause_reproduction_O()
+            self.encryptor.pause_reproduction_O()
 
     def reset_song_O(self):
         print("STOP ORIGINAL")
@@ -248,8 +271,8 @@ class MenuWindow (QWidget, Ui_Menu):
         self.pause_O = True
         self.counter1.reset_loop = True
         self.counter1.start()
-        #self.encryptor.pause_reproduction_O()
-        #self.encryptor.play_O()
+        self.encryptor.pause_reproduction_O()
+        self.encryptor.play_O()
 
 
     def play_song_E(self):
@@ -260,12 +283,12 @@ class MenuWindow (QWidget, Ui_Menu):
             self.first_time_E = 1
         if self.pausa_E == False:
             self.counter2.pause_loop = False
-            #self.encryptor.play_E()
+            self.encryptor.play_E()
         else:
             if (self.play_E):
                 self.pause_E = True
                 self.counter2.pause_loop = False
-                #self.encryptor.resume_song_E(self.counter2.play_seconds)
+                self.encryptor.resume_song_E(self.counter2.play_seconds)
                 self.play_E = False
 
     def pause_song_E(self):
@@ -275,7 +298,7 @@ class MenuWindow (QWidget, Ui_Menu):
             self.play_E = True
             self.pause_E = False
             self.counter2.pause_loop = True
-            #self.encryptor.pause_reproduction_E()
+            self.encryptor.pause_reproduction_E()
 
     def reset_song_E(self):
         print("STOP ENCRYPTADO")
@@ -284,8 +307,8 @@ class MenuWindow (QWidget, Ui_Menu):
         self.pause_E = True
         self.counter2.reset_loop = True
         self.counter2.start()
-        #self.encryptor.pause_reproduction_E()
-        #self.encryptor.play_E()
+        self.encryptor.pause_reproduction_E()
+        self.encryptor.play_E()
 
 
 
@@ -298,12 +321,12 @@ class MenuWindow (QWidget, Ui_Menu):
             self.first_time_E2 = 1
         if self.pausa_E2 == False:
             self.counter3.pause_loop = False
-            #self.decryptor.play_E()
+            self.decryptor.play_E()
         else:
             if (self.play_E2):
                 self.pause_E2 = True
                 self.counter3.pause_loop = False
-                #self.decryptor.resume_song_E(self.counter3.play_seconds)
+                self.decryptor.resume_song_E(self.counter3.play_seconds)
                 self.play_E2 = False
 
     def pause_song_E2(self):
@@ -313,7 +336,7 @@ class MenuWindow (QWidget, Ui_Menu):
             self.play_E2 = True
             self.pause_E2 = False
             self.counter3.pause_loop = True
-            #self.decryptor.pause_reproduction_E()
+            self.decryptor.pause_reproduction_E()
 
     def reset_song_E2(self):
         print("STOP ENCRYPTADO CARGADO")
@@ -322,8 +345,8 @@ class MenuWindow (QWidget, Ui_Menu):
         self.pause_E2 = True
         self.counter3.reset_loop = True
         self.counter3.start()
-        #self.decryptor.pause_reproduction_E()
-        #self.decryptor.play_E()
+        self.decryptor.pause_reproduction_E()
+        self.decryptor.play_E()
 
 
 
@@ -336,12 +359,12 @@ class MenuWindow (QWidget, Ui_Menu):
             self.first_time_D = 1
         if self.pausa_D == False:
             self.counter4.pause_loop = False
-            #self.decryptor.play_D()
+            self.decryptor.play_O()
         else:
             if (self.play_D):
                 self.pause_D = True
                 self.counter4.pause_loop = False
-                #self.decryptor.resume_song_D(self.counter4.play_seconds)
+                self.decryptor.resume_song_O(self.counter4.play_seconds)
                 self.play_D = False
 
 
@@ -352,7 +375,7 @@ class MenuWindow (QWidget, Ui_Menu):
             self.play_D = True
             self.pause_D = False
             self.counter4.pause_loop = True
-            #self.decryptor.pause_reproduction_D()
+            self.decryptor.pause_reproduction_O()
 
     def reset_song_D(self):
         print("STOP DESENCRYPTADO")
@@ -361,7 +384,7 @@ class MenuWindow (QWidget, Ui_Menu):
         self.pause_D = True
         self.counter4.reset_loop = True
         self.counter4.start()
-        #self.decryptor.pause_reproduction_D()
-        #self.decryptor.play_D()
+        self.decryptor.pause_reproduction_O()
+        self.decryptor.play_O()
 
 #############################################################################################

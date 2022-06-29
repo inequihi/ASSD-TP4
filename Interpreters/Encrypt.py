@@ -12,7 +12,6 @@ from Crypto.Cipher import AES
 from Crypto.Cipher import Blowfish
 from utils.percentage_for import percentage_for
 
-import simpleaudio as sa
 
 ##################################
 #           ENCRYPT              #
@@ -51,7 +50,7 @@ class Encrypt(Interpreter):
             FFTa = self.Encrypt_to_FFT_ASCII(FFTe)
             self.key = self.cipher.get_key()
             wav_answer = self.IFFTEncrypt(FFTa)
-            self.signal_encrypted
+            self.signal_encrypted = wav_answer
             self.create_Wav(wav_answer, NombreArchivoNuevo+ ".wav")
             f = open(NombreArchivoNuevo + ".txt","w+")
             f.write(str(len(self.FFT_Freq)) + "\n" + str(self.Max2Norm.real) + "\n")
@@ -317,10 +316,10 @@ class Encrypt(Interpreter):
             print("\n \n ERROR no es CBC \n \n")
             return "Error"
 
-    def get_og_fft_freq_data(self):
+    def get_o_fft_data(self):
         freq_o = fftfreq(len(self.signal), 1 / self.fs)
         return freq_o, self.FFT
 
-    def get_e_fft_freq_data(self):
+    def get_e_fft_data(self):
         freq_e = fftfreq(len(self.FFTe), 1 / self.fs)
         return freq_e, self.FFTe

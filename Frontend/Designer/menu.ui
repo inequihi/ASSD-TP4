@@ -321,7 +321,7 @@ color:black;
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit_key_3">
+                <widget class="QLineEdit" name="label_new_file_encrypt">
                  <property name="styleSheet">
                   <string notr="true">color:white;</string>
                  </property>
@@ -567,6 +567,19 @@ QPushButton:pressed{
                   <string>ORIGINAL FFT</string>
                  </property>
                 </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_17">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
                </item>
                <item>
                 <layout class="QVBoxLayout" name="Toolbar1_2">
@@ -871,6 +884,19 @@ QPushButton:pressed{
                   <string>ENCRYPT FFT</string>
                  </property>
                 </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_18">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
                </item>
                <item>
                 <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -1450,47 +1476,6 @@ QPushButton:pressed{
               </layout>
              </item>
              <item>
-              <spacer name="verticalSpacer_6">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_23">
-               <item>
-                <widget class="QLabel" name="label_26">
-                 <property name="font">
-                  <font>
-                   <pointsize>18</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
-                  </font>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">color:white;</string>
-                 </property>
-                 <property name="text">
-                  <string>NEW FILE NAME:</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLineEdit" name="lineEdit_key_2">
-                 <property name="styleSheet">
-                  <string notr="true">color:white;</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
               <spacer name="verticalSpacer_22">
                <property name="orientation">
                 <enum>Qt::Vertical</enum>
@@ -1502,6 +1487,21 @@ QPushButton:pressed{
                 </size>
                </property>
               </spacer>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_incorrect_D_2">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color:red;</string>
+               </property>
+               <property name="text">
+                <string>TextLabel</string>
+               </property>
+              </widget>
              </item>
              <item>
               <widget class="QLabel" name="label_incorrect_D">
@@ -1597,6 +1597,19 @@ color:white;</string>
                   <string>ENCRYPT FFT</string>
                  </property>
                 </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_15">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
                </item>
                <item>
                 <layout class="QVBoxLayout" name="Toolbar1_3">
@@ -1902,6 +1915,19 @@ QPushButton:pressed{
                   <string>DESENCRYPT FFT</string>
                  </property>
                 </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_16">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
                </item>
                <item>
                 <layout class="QVBoxLayout" name="verticalLayout_14">
