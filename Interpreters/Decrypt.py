@@ -63,7 +63,7 @@ class Decrypt(Interpreter):
         self.data_byte_enc = self.FFT_ASCII_to_encrypt(data_matriz_FTT)
         self.fft_decrypt =self.Byte_to_FFT(self.Decrypt_Process(algoritmo, KEY, MODE, self.data_byte_enc))
         self.signal_decrypt = self.IFFTDecrypt(self.fft_decrypt)
-        self.create_Wav(self.signal_decrypt, wav + "Desencrypt.wav")
+        self.create_Wav(self.signal_decrypt, wav + "Desencriptado.wav")
 
     def Read_Wav(self,path):
         sample_rate, samples = wav.read(path)
