@@ -1061,10 +1061,11 @@ class Ui_Menu(object):
         self.label_incorrect_D.setText(_translate("Menu", "TextLabel"))
         self.label_incorrect_D_2.setText(_translate("Menu", "TextLabel"))
         self.label_reloj_D.setText(_translate("Menu", "       "))
-        self.Button_Desencrypt.setText(_translate("Menu", "DESENCRYPT"))
+        self.Button_Desencrypt.setText(_translate("Menu", "DECRYPT"))
         self.label_23.setText(_translate("Menu", "ENCRYPT FFT"))
         self.label_24.setText(_translate("Menu", "DECRYPT FFT"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("Menu", "Decryptor"))
+
 
 from Frontend.src.mplwidget import *
 

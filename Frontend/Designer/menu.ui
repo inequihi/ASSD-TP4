@@ -1633,7 +1633,7 @@ border-radius: 5px;</string>
 color:white;</string>
                </property>
                <property name="text">
-                <string>DESENCRYPT</string>
+                <string>DECRYPT</string>
                </property>
               </widget>
              </item>
