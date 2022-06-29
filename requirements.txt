@@ -4,3 +4,4 @@ numpy~=1.20.3
 scipy~=1.7.1
 PyQt5~=5.15.7
 matplotlib~=3.5.2
+simpleaudio~=1.0.4
