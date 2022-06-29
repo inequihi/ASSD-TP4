@@ -15,6 +15,11 @@ class Ui_Menu(object):
     def setupUi(self, Menu):
         Menu.setObjectName("Menu")
         Menu.resize(1293, 812)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(Menu.sizePolicy().hasHeightForWidth())
+        Menu.setSizePolicy(sizePolicy)
         Menu.setStyleSheet("background:rgb(30,30,30);\n"
 "color:white;\n"
 "")
@@ -1052,6 +1057,7 @@ class Ui_Menu(object):
         self.label_23.setText(_translate("Menu", "ENCRYPT FFT"))
         self.label_24.setText(_translate("Menu", "DESENCRYPT FFT"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("Menu", "Desencriptador"))
+
 
 from Frontend.src.mplwidget import *
 
