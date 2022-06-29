@@ -317,7 +317,10 @@ class Encrypt(Interpreter):
             print("\n \n ERROR no es CBC \n \n")
             return "Error"
 
-    def get_fft_freq(self):
-        freq_O = fftfreq(len(self.signal), 1 / self.fs)
-        freq_E = fftfreq(len(self.FFTe), 1 / self.fs)
-        return self.FTT,freq_O,self.FFTe,freq_E
+    def get_og_fft_freq(self):
+        freq_o = fftfreq(len(self.signal), 1 / self.fs)
+        return freq_o, self.FFT
+
+    def get_e_fft_freq(self):
+        freq_e = fftfreq(len(self.FFTe), 1 / self.fs)
+        return freq_e, self.FFTe
