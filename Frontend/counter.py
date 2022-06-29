@@ -31,10 +31,11 @@ class Counter_O():
             self.menu.horizontalSlider_Original.setValue(self.play_seconds)
 
 
-        if self.reset_loop:
+        if self.reset_loop or self.play_seconds == self.max_time:
             self.play_seconds = 0
             self.reset_loop = False
             self.menu.horizontalSlider_Original.setValue(0)
+
 
     def reset(self):
         self.play_seconds = 0
@@ -69,7 +70,7 @@ class Counter_E():
             self.menu.horizontalSlider_Encrypt.setValue(self.play_seconds)
 
 
-        if self.reset_loop:
+        if self.reset_loop or self.play_seconds == self.max_time:
             self.play_seconds = 0
             self.reset_loop = False
             self.menu.horizontalSlider_Encrypt.setValue(0)
@@ -109,7 +110,7 @@ class Counter_E2():
             self.menu.horizontalSlider_Encrypt2.setValue(self.play_seconds)
 
 
-        if self.reset_loop:
+        if self.reset_loop or self.play_seconds == self.max_time:
             self.play_seconds = 0
             self.reset_loop = False
             self.menu.horizontalSlider_Encrypt2.setValue(0)
@@ -148,7 +149,7 @@ class Counter_D():
             self.menu.horizontalSlider_Desencrypt.setValue(self.play_seconds)
 
 
-        if self.reset_loop:
+        if self.reset_loop or self.play_seconds == self.max_time:
             self.play_seconds = 0
             self.reset_loop = False
             self.menu.horizontalSlider_Desencrypt.setValue(0)
