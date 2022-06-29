@@ -36,7 +36,10 @@ class Decrypt(Interpreter):
 
     def decrypt_wav(self, wav, algoritmo, key_str, MODE):
         print("\n --------------------- DECRYPT ---------------------- \n")
-
+        print(wav)
+        wav = str(wav)
+        wav = wav[:(len(wav)-4)]
+        print(wav)
         # Leo txt trambolico
         r = open(wav + ".txt", 'r')
         tamanio = int(r.readline())
@@ -118,7 +121,7 @@ class Decrypt(Interpreter):
 
         self.data_byte_enc = b_answer
         self.FFTe = self.data_byte_enc
-        print("\nDecrypt:FFTe\n",FFTe[:20])
+        #print("\nDecrypt:FFTe\n",self.FFTe[:20])
         return self.FFTe  # b'%5yu/223?'
 
 
@@ -222,7 +225,7 @@ class Decrypt(Interpreter):
 
         array_imag = np.append(array_imag, ceros)
         array_imag = np.append(array_imag, conj)
-
+        self.fft_decrypt = array_imag
         self.IFFT_Array = ifft(array_imag).real
         return self.IFFT_Array
         # Last we save results from IFFT to a .wav file
@@ -257,7 +260,7 @@ class Decrypt(Interpreter):
     ###### Play signal encrypted
 
     def play_signal_E(self, signal):
-        signal *= 32767 / np.max(np.abs(signal))
+        signal *= int(32767 / np.max(np.abs(signal)))
         signal = signal.astype(np.int16)
         self.play_E = sa.play_buffer(signal, 1, 2, int(self.fs))
         # self.play.wait_done()
@@ -281,12 +284,12 @@ class Decrypt(Interpreter):
         if self.signal is not None:
             self.play_signal_E(self.signal[int(time * self.fs):])
 
-    def get_og_fft_freq_data(self):
+    def get_o_fft_data(self):
         freq_o = fftfreq(len(self.fft_decrypt), 1 / self.fs)
         return freq_o, self.fft_decrypt
 
-    def get_e_fft_freq_data(self):
-        freq_e = fftfreq(len(FFT_Array), 1 / self.fs)
+    def get_e_fft_data(self):
+        freq_e = fftfreq(len(self.FFT_Array), 1 / self.fs)
         return freq_e, self.FFT_Array
     # SETTERS
     def set_FFTa(self, FFTa):

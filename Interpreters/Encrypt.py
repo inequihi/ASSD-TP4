@@ -138,6 +138,9 @@ class Encrypt(Interpreter):
         #     return samples[:,0]
         # elif len(samples[0] == 1):
         #     return samples
+
+
+        #return samples[:,0]
         return samples
 
     def create_Wav(self, signal, name_wav ):
@@ -156,7 +159,7 @@ class Encrypt(Interpreter):
             array_imag[fil] = complex(FFTa[fil][0], FFTa[fil][1])
 
         print("\n Array Image\n", array_imag)
-
+        self.FFTe = array_imag
         self.IFFT_Array = ifft(array_imag)
         array_ans = np.append(self.IFFT_Array.real, self.IFFT_Array.imag)
         self.IFFT_Array = array_ans
@@ -173,13 +176,13 @@ class Encrypt(Interpreter):
                                    # First we read .wav file and apply Fast Fourier Transform
         self.FFT_Array = fft(self.signal)
         print("\nEncrypt: Wav after FFT\n", self.FFT_Array)
-
+        self.FTT = self.FFT_Array
         # Posible error: fftfreq(N, 1/SAMPLE RATE)
 
         self.FFT_Freq = fftfreq(len(self.signal), 1/self.fs)
         w = 0
         for i in range(len(self.FFT_Freq)):
-            if (self.FFT_Freq[i] > 500):
+            if (self.FFT_Freq[i] > 2000):
                 w = i
                 break
         self.FFT_Array = self.FFT_Array[:w]
@@ -248,7 +251,7 @@ class Encrypt(Interpreter):
         return self.cipher.get_key()
 
     def play_signal_O(self, signal):
-        signal *= 32767 / np.max(np.abs(signal))
+        signal *= int(32767 / (np.max(np.abs(signal))))
         signal = signal.astype(np.int16)
         self.play_O = sa.play_buffer(signal, 1, 2, int(self.fs))
         # self.play.wait_done()
@@ -317,8 +320,8 @@ class Encrypt(Interpreter):
             return "Error"
 
     def get_o_fft_data(self):
-        freq_o = fftfreq(len(self.signal), 1 / self.fs)
-        return freq_o, self.FFT
+        freq_o = fftfreq(len(self.FTT), 1 / self.fs)
+        return freq_o, self.FTT
 
     def get_e_fft_data(self):
         freq_e = fftfreq(len(self.FFTe), 1 / self.fs)

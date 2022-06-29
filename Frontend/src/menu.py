@@ -132,9 +132,6 @@ class MenuWindow (QWidget, Ui_Menu):
         if (self.radioButton_AES.isChecked()) == 0 and (self.radioButton_Blowfish.isChecked()) == 0:
             self.label_incorrect_E.setText("FAIL: Algorithm was no chosen. Please choose one to continue.")
             self.label_incorrect_E.show()
-        if len(self.label_new_file_encrypt.text() == 0):
-            self.label_incorrect_E.setText("FAIL: Please fill all the information.")
-            self.label_incorrect_E.show()
         else:
             if self.radioButton_AES.isChecked() == 1:
                 self.algorithm_E = "AES"
@@ -187,9 +184,9 @@ class MenuWindow (QWidget, Ui_Menu):
             self.counter4 = Counter_D(self, self.decryptor.get_original_duration())
             self.horizontalSlider_Encrypt2.setMaximum(int(self.decryptor.get_encrypted_duration()))
             self.horizontalSlider_Desencrypt.setMaximum(int(self.decryptor.get_original_duration()))
-            graph_fft(self.MplWidget_5.canvas.ax, self.encryptor.get_e_fft_data())
+            graph_fft(self.MplWidget_5.canvas.ax, self.decryptor.get_e_fft_data())
             self.MplWidget_5.canvas.draw()
-            graph_fft(self.MplWidget_6.canvas.ax, self.encryptor.get_o_fft_data())
+            graph_fft(self.MplWidget_6.canvas.ax, self.decryptor.get_o_fft_data())
             self.MplWidget_6.canvas.draw()
 
 
@@ -213,9 +210,7 @@ class MenuWindow (QWidget, Ui_Menu):
         elif self.radioButton_ECB.isChecked() == 0 and self.radioButton_CBC.isChecked() == 0:
             self.Button_Encrypt.setStyleSheet("background: red;\n"
                                               "color: white;")
-        elif len(self.label_new_file_encrypt) == 0:
-            self.Button_Encrypt.setStyleSheet("background: red;\n"
-                                              "color: white;")
+
         else:
             self.Button_Encrypt.setStyleSheet("background: green;\n"
                                                  "color: white;")
