@@ -8,7 +8,6 @@ class Counter_O():
     def __init__(self, menu, max_time):
         self.pause_loop = False
         self.reset_loop = False
-
         self.play_seconds = 0
         self.pause_seconds = 0
         self.max_time = max_time
@@ -87,7 +86,6 @@ class Counter_E2():
     def __init__(self, menu, max_time):
         self.pause_loop = False
         self.reset_loop = False
-
         self.play_seconds = 0
         self.pause_seconds = 0
         self.max_time = max_time

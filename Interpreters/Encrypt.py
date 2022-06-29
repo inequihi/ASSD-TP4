@@ -182,7 +182,7 @@ class Encrypt(Interpreter):
         self.FFT_Freq = fftfreq(len(self.signal), 1/self.fs)
         w = 0
         for i in range(len(self.FFT_Freq)):
-            if (self.FFT_Freq[i] > 2000):
+            if (self.FFT_Freq[i] > 1000):
                 w = i
                 break
         self.FFT_Array = self.FFT_Array[:w]
@@ -324,5 +324,6 @@ class Encrypt(Interpreter):
         return freq_o, self.FTT
 
     def get_e_fft_data(self):
-        freq_e = fftfreq(len(self.FFTe), 1 / self.fs)
-        return freq_e, self.FFTe
+        FFT_encrypted_wav = fft(self.signal_encrypted)
+        freq_e = fftfreq(len(FFT_encrypted_wav), 1 / self.fs)
+        return freq_e, FFT_encrypted_wav

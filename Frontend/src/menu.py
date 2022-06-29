@@ -154,6 +154,11 @@ class MenuWindow (QWidget, Ui_Menu):
             self.counter2 = Counter_E(self, self.encryptor.get_encrypted_duration())
             self.horizontalSlider_Original.setMaximum(int(self.encryptor.get_original_duration()))
             self.horizontalSlider_Encrypt.setMaximum(int(self.encryptor.get_encrypted_duration()))
+
+            # Limpio graficos previos
+            self.MplWidget.canvas.ax.clear()
+            self.MplWidget_2.canvas.ax.clear()
+
             graph_fft(self.MplWidget.canvas.ax, self.encryptor.get_o_fft_data())
             self.MplWidget.canvas.draw()
             graph_fft(self.MplWidget_2.canvas.ax, self.encryptor.get_e_fft_data())
@@ -189,6 +194,11 @@ class MenuWindow (QWidget, Ui_Menu):
             self.counter4 = Counter_D(self, self.decryptor.get_original_duration())
             self.horizontalSlider_Encrypt2.setMaximum(int(self.decryptor.get_encrypted_duration()))
             self.horizontalSlider_Desencrypt.setMaximum(int(self.decryptor.get_original_duration()))
+
+            # Limpio graficos previos
+            self.MplWidget_5.canvas.ax.clear()
+            self.MplWidget_6.canvas.ax.clear()
+
             graph_fft(self.MplWidget_5.canvas.ax, self.decryptor.get_e_fft_data())
             self.MplWidget_5.canvas.draw()
             graph_fft(self.MplWidget_6.canvas.ax, self.decryptor.get_o_fft_data())
