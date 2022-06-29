@@ -135,6 +135,7 @@ class MenuWindow (QWidget, Ui_Menu):
             self.label_incorrect_E.setText("FAIL: Algorithm was no chosen. Please choose one to continue.")
             self.label_incorrect_E.show()
         else:
+            self.label_reloj_E.show()
             if self.radioButton_AES.isChecked() == 1:
                 self.algorithm_E = "AES"
             else:
@@ -143,8 +144,6 @@ class MenuWindow (QWidget, Ui_Menu):
                 self.mode_E = "ecb"
             else:
                 self.mode_E = "cbc"
-
-            self.label_reloj_E.show()
 
             self.encryptor.encrypt_wav(self.original_path_name, self.algorithm_E, self.mode_E, self.label_new_file_encrypt.text())
             self.label_incorrect_E.hide()
