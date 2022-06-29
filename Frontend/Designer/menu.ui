@@ -10,12 +10,6 @@
     <height>812</height>
    </rect>
   </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
-  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -349,48 +343,19 @@ color:black;
               </spacer>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_25">
-               <item>
-                <widget class="QLabel" name="label_incorrect_E">
-                 <property name="font">
-                  <font>
-                   <pointsize>10</pointsize>
-                  </font>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">color:red;</string>
-                 </property>
-                 <property name="text">
-                  <string>TextLabel</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <spacer name="horizontalSpacer_20">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_2">
-                 <property name="styleSheet">
-                  <string notr="true">border-image: url(:/reloj/reloj.jpg);
-border: none;
-border-radius: 10px;</string>
-                 </property>
-                 <property name="text">
-                  <string>          </string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+              <widget class="QLabel" name="label_incorrect_E">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color:red;</string>
+               </property>
+               <property name="text">
+                <string>TextLabel</string>
+               </property>
+              </widget>
              </item>
              <item>
               <widget class="QPushButton" name="Button_Encrypt">
@@ -1558,31 +1523,6 @@ QPushButton:pressed{
                   </widget>
                  </item>
                 </layout>
-               </item>
-               <item>
-                <spacer name="horizontalSpacer_19">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item>
-                <widget class="QLabel" name="label">
-                 <property name="styleSheet">
-                  <string notr="true">border-image: url(:/reloj/reloj.jpg);
-border: none;
-border-radius: 20px;</string>
-                 </property>
-                 <property name="text">
-                  <string>            </string>
-                 </property>
-                </widget>
                </item>
               </layout>
              </item>
