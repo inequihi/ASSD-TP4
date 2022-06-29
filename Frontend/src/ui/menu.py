@@ -1049,7 +1049,7 @@ class Ui_Menu(object):
         self.label_copied.setText(_translate("Menu", "copied"))
         self.label_19.setText(_translate("Menu", "ORIGINAL FFT"))
         self.label_20.setText(_translate("Menu", "ENCRYPT FFT"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("Menu", "Encriptador"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("Menu", "Encryptor"))
         self.Button_Upload_Encrypt.setText(_translate("Menu", "UPLOAD"))
         self.label_22.setText(_translate("Menu", "ALGORITHM:"))
         self.radioButton_AES_2.setText(_translate("Menu", "AES"))
@@ -1063,8 +1063,8 @@ class Ui_Menu(object):
         self.label_reloj_D.setText(_translate("Menu", "       "))
         self.Button_Desencrypt.setText(_translate("Menu", "DESENCRYPT"))
         self.label_23.setText(_translate("Menu", "ENCRYPT FFT"))
-        self.label_24.setText(_translate("Menu", "DESENCRYPT FFT"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("Menu", "Desencriptador"))
+        self.label_24.setText(_translate("Menu", "DECRYPT FFT"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("Menu", "Decryptor"))
 
 from Frontend.src.mplwidget import *
 
@@ -1074,6 +1074,7 @@ import Frontend.src.ui.pause
 import Frontend.src.ui.stop
 import Frontend.src.ui.copy
 import Frontend.src.ui.reloj
+
 
 if __name__ == "__main__":
     import sys

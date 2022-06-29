@@ -45,7 +45,7 @@ color:black;
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
-         <string>Encriptador</string>
+         <string>Encryptor</string>
         </attribute>
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
@@ -1231,7 +1231,7 @@ QPushButton:pressed{
        </widget>
        <widget class="QWidget" name="tab_2">
         <attribute name="title">
-         <string>Desencriptador</string>
+         <string>Decryptor</string>
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_5">
          <item>
@@ -2000,7 +2000,7 @@ QPushButton:pressed{
                   <string notr="true">color:white;</string>
                  </property>
                  <property name="text">
-                  <string>DESENCRYPT FFT</string>
+                  <string>DECRYPT FFT</string>
                  </property>
                 </widget>
                </item>
