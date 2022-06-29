@@ -12,6 +12,8 @@ from Crypto.Cipher import AES
 from Crypto.Cipher import Blowfish
 from utils.percentage_for import percentage_for
 
+import simpleaudio as sa
+
 ##################################
 #           ENCRYPT              #
 ##################################
@@ -29,6 +31,7 @@ class Encrypt(Interpreter):
         self.Process = None
         self.FTT = None
         self.FFTe = None
+        self.signal_encrypted = None
 
     def encrypt_wav(self, wav, process_type, mode, NombreArchivoNuevo):
         self.signal = self.Read_Wav(wav)   #Si bien la funcion devuelve un samples, esa informacion ya esta guardada en self.fs
@@ -48,6 +51,7 @@ class Encrypt(Interpreter):
             FFTa = self.Encrypt_to_FFT_ASCII(FFTe)
             self.key = self.cipher.get_key()
             wav_answer = self.IFFTEncrypt(FFTa)
+            self.signal_encrypted
             self.create_Wav(wav_answer, NombreArchivoNuevo+ ".wav")
             f = open(NombreArchivoNuevo + ".txt","w+")
             f.write(str(len(self.FFT_Freq)) + "\n" + str(self.Max2Norm.real) + "\n")
@@ -244,6 +248,61 @@ class Encrypt(Interpreter):
     def get_key(self):
         return self.cipher.get_key()
 
+    def play_signal_O(self, signal):
+        signal *= 32767 / np.max(np.abs(signal))
+        signal = signal.astype(np.int16)
+        self.play_O = sa.play_buffer(signal, 1, 2, int(self.fs))
+        # self.play.wait_done()
+
+    def play_O(self):
+        if self.signal is not None:
+            self.play_signal_O(self.signal)
+
+
+    def get_original_duration(self):
+        return (len(self.signal) / self.fs)
+
+    def pause_reproduction_O(self):
+        # if self.play.isplaying() and self.play is not None:
+        if self.play_O is not None:
+            self.play_O.stop()
+        else:
+            return -1
+
+    def resume_song_O(self, time):
+        if self.signal is not None:
+            self.play_signal_O(self.signal[int(time * self.fs):])
+
+###### Play signal encrypted ( falta guardar la señal encryptada en la clase )
+
+    def play_signal_E(self, signal):
+        signal *= 32767 / np.max(np.abs(signal))
+        signal = signal.astype(np.int16)
+        self.play_E = sa.play_buffer(signal, 1, 2, int(self.fs))
+        # self.play.wait_done()
+
+    def play_E(self):
+        if self.signal_encrypted  is not None:
+            self.play_signal_E(self.signal_encrypted )
+
+
+    def get_encrypted_duration(self):
+        return (len(self.signal_encrypted) / self.fs)
+
+    def pause_reproduction_E(self):
+        # if self.play.isplaying() and self.play is not None:
+        if self.play_E is not None:
+            self.play_E.stop()
+        else:
+            return -1
+
+    def resume_song_E(self, time):
+        if self.signal is not None:
+            self.play_signal_E(self.signal_encrypted [int(time * self.fs):])
+
+
+
+
     def get_FFTa(self):
         return self.data_matrix_FFT
 
@@ -257,3 +316,8 @@ class Encrypt(Interpreter):
         else:
             print("\n \n ERROR no es CBC \n \n")
             return "Error"
+
+    def get_fft_freq(self):
+        freq_O = fftfreq(len(self.signal), 1 / self.fs)
+        freq_E = fftfreq(len(self.FFTe), 1 / self.fs)
+        return self.FTT,freq_O,self.FFTe,freq_E

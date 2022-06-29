@@ -117,9 +117,9 @@ class Decrypt(Interpreter):
         b_answer = str_answer.encode("latin-1")
 
         self.data_byte_enc = b_answer
-        FFTe = self.data_byte_enc
+        self.FFTe = self.data_byte_enc
         print("\nDecrypt:FFTe\n",FFTe[:20])
-        return FFTe  # b'%5yu/223?'
+        return self.FFTe  # b'%5yu/223?'
 
 
     def Byte_to_FFT(self, byte_fft):
@@ -239,6 +239,10 @@ class Decrypt(Interpreter):
         if self.signal_decrypt is not None:
             self.play_signal_O(self.signal_decrypt)
 
+
+    def get_original_duration(self):
+        return (len(self.signal_decrypt) / self.fs)
+
     def pause_reproduction_O(self):
         # if self.play.isplaying() and self.play is not None:
         if self.play_O is not None:
@@ -258,9 +262,13 @@ class Decrypt(Interpreter):
         self.play_E = sa.play_buffer(signal, 1, 2, int(self.fs))
         # self.play.wait_done()
 
+    def get_encrypted_duration(self):
+        return(len(self.signal)/self.fs)
+
     def play_E(self):
         if self.signal is not None:
             self.play_signal_O(self.signal)
+
 
     def pause_reproduction_E(self):
         # if self.play.isplaying() and self.play is not None:
@@ -273,7 +281,10 @@ class Decrypt(Interpreter):
         if self.signal is not None:
             self.play_signal_E(self.signal[int(time * self.fs):])
 
-
+    def get_fft_freq(self):
+        freq_O = fftfreq(len(self.fft_decrypt), 1 / self.fs)
+        freq_E = fftfreq(len(self.FFT_Array), 1 / self.fs)
+        return self.fft_decrypt,freq_O,self.FFT_Array,freq_E
     # SETTERS
     def set_FFTa(self, FFTa):
         self.data_matrix_FFT = FFTa
