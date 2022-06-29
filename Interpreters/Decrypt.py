@@ -288,9 +288,16 @@ class Decrypt(Interpreter):
         freq_o = fftfreq(len(self.fft_decrypt), 1 / self.fs)
         return freq_o, self.fft_decrypt
 
+#    def get_e_fft_data(self):
+#        freq_e = fftfreq(len(self.FFT_Array), 1 / self.fs)
+#        return freq_e, self.FFT_Array
+
     def get_e_fft_data(self):
-        freq_e = fftfreq(len(self.FFT_Array), 1 / self.fs)
-        return freq_e, self.FFT_Array
+        FFT_encrypted_wav = fft(self.signal)
+        freq_e = fftfreq(len(FFT_encrypted_wav), 1 / self.fs)
+        return freq_e, FFT_encrypted_wav
+
+
     # SETTERS
     def set_FFTa(self, FFTa):
         self.data_matrix_FFT = FFTa
