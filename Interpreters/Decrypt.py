@@ -4,6 +4,7 @@ from utils.percentage_for import percentage_for
 import numpy as np
 from scipy.io import wavfile as wav
 from scipy.fft import fft, ifft, fftfreq
+import cmath
 
 import simpleaudio as sa
 
@@ -42,12 +43,8 @@ class Decrypt(Interpreter):
         max2norm = float(r.readline())
         if MODE == "cbc":
             cipher_IV_str = str(r.readline())
-            print("\n CIPHER IV \n", cipher_IV_str)
             self.cipher_IV = cipher_IV_str  # CipherIV esta codificado en utf-8
             print("\n self.cipher_IV en decrypt",self.cipher_IV)
-            #self.cipher_IV = cipher_IV_str.encode(utf-8)  #Encode para pasar de string a bytes
-
-            print("\n CIPHER IV \n", self.cipher_IV)
         r.close()
 
         self.tamanioSignalOriginal = tamanio  # Lo voy a usar para crear wav original (IFFTDecrypt)
@@ -57,21 +54,22 @@ class Decrypt(Interpreter):
 
         self.signal = self.Read_Wav(wav + ".wav")
         #Aplicamos transformada de fourier a la señal del wav
-        self.FFTDecrypt()
-        print("\nDecrypt: FFTa hardcodeada\n",self.data_matrix_FFT)
-        data_matriz_FTT = self.data_matrix_FFT
+        self.data_matrix_FFT = self.FFTDecrypt()
+
+        data_matriz_FTT = self.data_matrix_FFT          #Dejamos por posible hardcore
+
         self.data_byte_enc = self.FFT_ASCII_to_encrypt(data_matriz_FTT)
+
         self.fft_decrypt =self.Byte_to_FFT(self.Decrypt_Process(algoritmo, KEY, MODE, self.data_byte_enc))
         self.signal_decrypt = self.IFFTDecrypt(self.fft_decrypt)
         self.create_Wav(self.signal_decrypt, wav + "Desencriptado.wav")
 
+
     def Read_Wav(self,path):
         sample_rate, samples = wav.read(path)
-        #print("\nDecrypt: Samples from encrypted wav\n",samples*self.Max2Norm)
-        #print("\nDecrypt: Max de señal encriptada creada\n",self.Max2Norm)
         self.fs = sample_rate
-        #return samples[:,0]
         return samples*self.Max2Norm
+
 
     def create_Wav(self, signal, name_wav ):
         print("\nsignal que llega a Create Wav\n",signal)
@@ -108,11 +106,13 @@ class Decrypt(Interpreter):
         # Recibe FFTa de Interpreter.FFT
         # Devuelve FFTe para aplicar algoritmo de desencriptacion
         self.data_matrix_FFT = FFTa
-        #print("FFTa",self.data_matrix_FFT)
+
         str_answer = ""
-        for i in range(0, len(self.data_matrix_FFT)):
-            for j in range(0, len(self.data_matrix_FFT[i])):
-                str_answer += (chr(int(self.data_matrix_FFT[i][j])))
+        for i in range(0, len(FFTa)):
+            for j in range(0, len(FFTa[i])):
+                y = FFTa[i][j]
+                x = (int(round(FFTa[i][j])))
+                str_answer += str(chr(x))
 
         b_answer = str_answer.encode("latin-1")
 
@@ -171,9 +171,25 @@ class Decrypt(Interpreter):
         # en frecuencia. Necesitamos si o si todos los datos.
 
         #self.FFT_Array = fft(self.signal)
-        print("\nIFFTEncrypt recibida por Decrypt:\n",self.IFFTEncrypt)
+        print("\nIFFTEncrypt recibida por Decrypt:\n",self.signal)
 
-        self.FFT_Array = fft(self.IFFTEncrypt)
+        half_array = int((len(self.signal)) / 2)
+        FFTa_Decrypt = np.empty(1)
+        for i in range(half_array):
+            arr = FFTa_Decrypt
+            value = complex(self.signal[i], self.signal[i + half_array])
+
+            FFTa_Decrypt = np.append(arr, value)
+
+        self.FFT_Array = fft(FFTa_Decrypt[1:])
+        print(self.FFT_Array)
+        FFTa_Decrypt = np.empty(1)
+        for i in range(len(self.FFT_Array)):
+            arr = FFTa_Decrypt
+            value = complex(self.FFT_Array[i].real, self.FFT_Array[i].imag)
+            FFTa_Decrypt = np.append(arr, value)
+
+        self.FFT_Array = FFTa_Decrypt[1:]
         print("\nDecrypt: Wav after FFT\n", self.FFT_Array)
 
         # Last we encode FFT array of complex numbers to bytes to use the encryption algorithms

@@ -43,7 +43,10 @@ def test_aes(data):
 def test_encrypt_signal():
        path = "Raw_Wavs/Flauta-LA.wav"
        Encriptacion = Encrypt()
-       Encriptacion.encrypt_wav(path, "AES","cbc","MensajeEncriptado")
+       # modos
+       # "ecb" --> Electronic Code Book
+       # "cbc" --> Cipher-Block Chaining
+       Encriptacion.encrypt_wav(path, "AES","ecb","MensajeEncriptado")
 
        ifftencry = Encriptacion.get_IFFTArray()
 
@@ -53,24 +56,7 @@ def test_encrypt_signal():
        Cipheriv = Encriptacion.get_CipherIV()
 
        Decriptacion = Decrypt()
-
-       # Si o si necesitamos maxima amplitud de la señal original pre-encrypt para IFFT
-       #Decriptacion.set_Max2Norm(Encriptacion.get_max2norm())
-
-       # Si o si necesitamos tamaño para IFFTDecrypt
-       #Decriptacion.set_TamañoSignalOriginal(tamaño)
-
-       # Hardocdeo FFTa
-       Decriptacion.set_FFTa(Encriptacion.get_FFTa())
-
-       #Hardocdeo IFFT
-       Decriptacion.set_IFFTEncrypt(ifftencry)
-
-       # modos
-       # "ecb" --> Electronic Code Book
-       # "cbc" --> Cipher-Block Chaining
-
-       Decriptacion.decrypt_wav("MensajeEncriptado","BLOB",keystr,"ebc")
+       Decriptacion.decrypt_wav("MensajeEncriptado","AES",keystr,"ecb")
 
 
 

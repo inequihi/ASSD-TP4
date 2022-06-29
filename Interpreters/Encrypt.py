@@ -80,8 +80,6 @@ class Encrypt(Interpreter):
             print("pone un algoritmo crack")
 
 
-
-
     def FFT_to_byte(self, matrix):
         self.data_matrix_FFT = matrix           # Recibe de funcion Interpreter.FFT()
         string = ""
@@ -133,7 +131,10 @@ class Encrypt(Interpreter):
     def Read_Wav(self,path):
         sample_rate, samples = wav.read(path)
         self.fs = sample_rate
-        #return samples[:,0]
+        # if len(samples[0]) > 1:
+        #     return samples[:,0]
+        # elif len(samples[0] == 1):
+        #     return samples
         return samples
 
     def create_Wav(self, signal, name_wav ):
@@ -142,7 +143,6 @@ class Encrypt(Interpreter):
         print("\nEncrypt: Max de señal encriptada creada\n",self.Max2Norm)
         signalNorm = signal.astype(np.float32)/self.Max2Norm
         wav.write( name_wav, self.fs, signalNorm.real)
-        #print("\nEncrypt: Wav creado por encrypt\n",samples)
 
 
     def IFFTEncrypt(self,FFTa):
@@ -152,19 +152,11 @@ class Encrypt(Interpreter):
         for fil in range(len(FFTa)):
             array_imag[fil] = complex(FFTa[fil][0], FFTa[fil][1])
 
-        if(len(array_imag)%2):
-            # Hacemos a la FFT simetrica
-            conjugado = np.conj(array_imag[1:])
-            conj = np.flip(conjugado)
-            array_imag = np.append(array_imag, conj)
-        else:
-            conjugado = np.conj(array_imag)
-            conj = np.flip(conjugado)
-            array_imag = np.append(array_imag, conj)
-
         print("\n Array Image\n", array_imag)
 
         self.IFFT_Array = ifft(array_imag)
+        array_ans = np.append(self.IFFT_Array.real, self.IFFT_Array.imag)
+        self.IFFT_Array = array_ans
 
         print("\nEncrypt: Samples 2 encrypted wav\n",self.IFFT_Array)
         # FFTDECRYPT(IFFT ENCRYPT (FFTa)) = FFTa
@@ -182,9 +174,9 @@ class Encrypt(Interpreter):
         # Posible error: fftfreq(N, 1/SAMPLE RATE)
 
         self.FFT_Freq = fftfreq(len(self.signal), 1/self.fs)
-
+        w = 0
         for i in range(len(self.FFT_Freq)):
-            if (self.FFT_Freq[i] > 2000):
+            if (self.FFT_Freq[i] > 500):
                 w = i
                 break
         self.FFT_Array = self.FFT_Array[:w]
