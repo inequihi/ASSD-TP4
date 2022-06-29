@@ -281,11 +281,11 @@ class Decrypt(Interpreter):
         if self.signal is not None:
             self.play_signal_E(self.signal[int(time * self.fs):])
 
-    def get_og_fft_freq(self):
+    def get_og_fft_freq_data(self):
         freq_o = fftfreq(len(self.fft_decrypt), 1 / self.fs)
         return freq_o, self.fft_decrypt
 
-    def get_e_fft_freq(self):
+    def get_e_fft_freq_data(self):
         freq_e = fftfreq(len(FFT_Array), 1 / self.fs)
         return freq_e, self.FFT_Array
     # SETTERS
